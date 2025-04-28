@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:replace="${title} ?: 'Spotify Playlist Generator'">Spotify Playlist Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .navigation {
+            background-color: #333;
+            overflow: hidden;
+        }
+        .navigation a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        .navigation a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .navigation a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            text-align: center;
+        }
+        .filter-form {
+            margin-bottom: 20px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            justify-items: center;
+        }
+        .grid-item {
+            text-align: center;
+            max-width: 200px;
+        }
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            max-width: 200px;
+        }
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .pagination-controls button,
+        .pagination-controls select {
+            padding: 5px 10px;
+        }
+        .items-per-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navigation">
+    <a th:href="@{/api/artists}" th:classappend="${#strings.equals(currentPage, 'artists') ? 'active' : ''}">Top Artists</a>
+    <a th:href="@{/api/tracks}" th:classappend="${#strings.equals(currentPage, 'tracks') ? 'active' : ''}">Top Tracks</a>
+    <a th:href="@{/api/playlists}" th:classappend="${#strings.equals(currentPage, 'playlists') ? 'active' : ''}">My Playlists</a>
+    <a th:href="@{/api/select-genres}" th:classappend="${#strings.equals(currentPage, 'select-genres') ? 'active' : ''}">Playlist creation</a>
+</nav>
+
+<div class="content">
+    <th:block th:replace="${content}"></th:block>
+</div>
+
+<!-- Reusable Pagination Fragment -->
+<div th:fragment="pagination(endpoint, timeRangeParam)" class="pagination-container">
+    <!-- Items per Page Selector -->
+    <div class="items-per-page" th:if="${itemsPerPageOptions != null}">
+        <form th:action="@{${endpoint}}" method="get">
+            <!-- Conditionally add time range parameter if provided -->
+            <input type="hidden" name="timeRange" th:if="${timeRangeParam}" th:value="${selectedTimeRange}" />
+
+            <label for="itemsPerPage">Items per page:</label>
+            <select name="itemsPerPage" id="itemsPerPage" onchange="this.form.submit()">
+                <option th:each="option : ${itemsPerPageOptions}"
+                        th:value="${option.value}"
+                        th:text="${option.value}"
+                        th:selected="${option.value == itemsPerPage}">
+                </option>
+            </select>
+        </form>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls" th:if="${totalPages > 1}">
+        <form th:action="@{${endpoint}}" method="get">
+            <!-- Conditionally add time range parameter if provided -->
+            <input type="hidden" name="timeRange" th:if="${timeRangeParam}" th:value="${selectedTimeRange}" />
+            <input type="hidden" name="itemsPerPage" th:value="${itemsPerPage}" />
+
+            <button type="submit" name="page" th:value="${currentPage - 1}" th:disabled="${currentPage == 1}">Previous</button>
+
+            <span th:text="|Page ${currentPage} of ${totalPages}|">Page 1 of 10</span>
+
+            <button type="submit" name="page" th:value="${currentPage + 1}" th:disabled="${currentPage == totalPages}">Next</button>
+        </form>
+    </div>
+
+    <!-- Pagination Summary -->
+    <div th:if="${totalPages > 0}" class="pagination-summary">
+        <p th:text="|Showing ${(currentPage - 1) * itemsPerPage + 1} to
+            ${(currentPage * itemsPerPage) < totalItems ? (currentPage * itemsPerPage) : totalItems}
+            of ${totalItems} items|">
+            Showing 1 to 10 of 50 items
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

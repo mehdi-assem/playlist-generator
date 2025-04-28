@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Playlist</title>
+    <link th:replace="~{base :: style}"/>
+</head>
+<body>
+<div th:replace="~{base :: .navigation}"></div>
+
+<div th:fragment="content" class="content">
+    <h1>Generated Playlist</h1>
+
+    <h3>Selected Artists:</h3>
+    <ul>
+        <li th:each="artist : ${artists}" th:text="${artist}"></li>
+    </ul>
+
+    <h3>Selected Songs (30):</h3>
+    <ul>
+        <li th:each="track : ${tracks}" th:text="${track.name}"></li>
+    </ul>
+
+    <form action="/api/playlist-generation" method="get">
+        <input type="hidden" name="artists" th:value="${artists}">
+        <button type="submit">Refresh Playlist</button>
+    </form>
+
+    <form action="/api/confirm-playlist" method="post">
+        <input type="hidden" name="tracks" th:each="track : ${tracks}" th:value="${track.uri}">
+        <button type="submit">Confirm Playlist Creation</button>
+    </form>
+
+    <a href="/api/select-genres">Restart from Genre Selection</a>
+</div>
+</body>
+</html>

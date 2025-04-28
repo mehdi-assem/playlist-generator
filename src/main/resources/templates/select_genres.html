@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Music Genres</title>
+    <link th:replace="~{base :: style}"/>
+</head>
+<body>
+<div th:replace="~{base :: .navigation}"></div>
+
+<div th:fragment="content" class="content">
+    <h1>Select Music Genres</h1>
+
+    <form th:action="@{/api/select-artists}" method="get">
+        <div th:each="tag : ${tags}">
+            <input type="checkbox" name="tags" th:value="${tag}" id="${tag}">
+            <label th:for="${tag}" th:text="${tag}"></label>
+        </div>
+
+        <button type="submit">Next</button>
+    </form>
+</div>
+</body>
+</html>

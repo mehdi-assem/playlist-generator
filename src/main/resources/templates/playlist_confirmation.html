@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Confirmation</title>
+    <link th:replace="~{base :: style}"/>
+</head>
+<body>
+<div th:replace="~{base :: .navigation}"></div>
+
+<div th:fragment="content" class="content">
+    <h1>Playlist Confirmation</h1>
+
+    <p th:text="${message}"></p>
+
+    <h3>Final Playlist:</h3>
+    <ul>
+        <li th:each="track : ${tracks}" th:text="${track}"></li>
+    </ul>
+
+    <a href="/api/select-genres">Generate Another Playlist</a>
+</div>
+</body>
+</html>

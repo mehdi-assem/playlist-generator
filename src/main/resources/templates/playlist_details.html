@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Your Playlist</title>
+    <link th:replace="~{base :: style}"/>
+</head>
+<body>
+<div th:replace="~{base :: .navigation}"></div>
+
+<div th:fragment="content" class="content">
+    <h1>Your Playlist</h1>
+    <ul>
+        {% for song in playlist %}
+        <li>{{ song }}</li>
+        {% endfor %}
+    </ul>
+    <form action="/confirm-playlist" method="get">
+        <input type="text" name="name" placeholder="Playlist Name" required>
+        <input type="hidden" name="songs" value="{{ playlist }}">
+        <button type="submit">Save to Spotify</button>
+    </form>
+</div>
+</body>
+</html>

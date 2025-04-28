@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Playlists</title>
+    <link th:replace="~{base :: style}"/>
+</head>
+<body>
+<div th:replace="~{base :: .navigation}"></div>
+
+<div th:fragment="content" class="content">
+    <h1>Your Playlists</h1>
+    <div id="playlists-container" class="grid-container" th:if="${not #lists.isEmpty(playlists)}">
+        <div th:each="playlist : ${playlists}" class="grid-item">
+            <h2 th:text="${playlist.name}">Playlist Name</h2>
+            <img th:src="${playlist.images != null and playlist.images.length > 0 ? playlist.images[0].url : '/path/to/default/image.jpg'}" alt="Playlist Image"/>
+            <p th:text="${'Tracks: ' + playlist.tracks.total}">Tracks Count</p>
+        </div>
+    </div>
+    <div th:if="${#lists.isEmpty(playlists)}">
+        <h2>No playlists found.</h2>
+    </div>
+
+    <!-- Reusable Pagination Fragment -->
+    <div th:replace="~{base :: pagination('/api/playlists', 'timeRange')}"></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Artists</title>
+    <link th:replace="~{base :: style}"/>
+</head>
+<body>
+<div th:replace="~{base :: .navigation}"></div>
+
+<div th:fragment="content" class="content">
+<h1>Select Artists</h1>
+    <form action="/api/playlist-generation" method="get">
+        <div>
+            <!-- Loop through the artists and generate checkboxes -->
+            <fieldset>
+                <legend>Select your artists:</legend>
+                <div>
+                    <!-- Use Thymeleaf to dynamically create checkboxes for each artist -->
+                    <ul>
+                        <!-- Loop over the 'artists' list and generate a checkbox for each -->
+                        <li th:each="artist : ${artists}">
+                            <label>
+                                <input type="checkbox" name="artists" th:value="${artist}" />
+                                <span th:text="${artist}">Artist Name</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </fieldset>
+        </div>
+        <button type="submit">Generate Playlist</button>
+    </form>
+</div>
+</body>
+</html>

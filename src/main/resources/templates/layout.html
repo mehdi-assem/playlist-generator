@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Top Artists</title>
+  <style>
+    .artist-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+    .artist-card {
+        width: 200px;
+        text-align: center;
+    }
+    .artist-card img {
+        width: 100%;
+        height: auto;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="layout :: content">
+  <h1>Top Artists</h1>
+  <form th:action="@{/api/artists}" method="get">
+    <label for="timeRange">Select Time Range:</label>
+    <select name="timeRange" id="timeRange" onchange="this.form.submit()">
+      <option th:each="tr : ${timeRanges}"
+              th:value="${tr.value}"
+              th:text="${tr.description}"
+              th:selected="${tr.value == selectedTimeRange}">
+      </option>
+    </select>
+  </form>
+  <div th:if="${#lists.isEmpty(artists)}">
+    <h2>No artists found.</h2>
+  </div>
+  <div th:if="${not #lists.isEmpty(artists)}" class="artist-grid">
+    <div th:each="artist : ${artists}" class="artist-card">
+      <h2 th:text="${artist.name}">Artist Name</h2>
+      <img th:src="${artist.images[0].url}" alt="Artist Image"/>
+    </div>
+  </div>
+</div>
+</body>
+</html>
