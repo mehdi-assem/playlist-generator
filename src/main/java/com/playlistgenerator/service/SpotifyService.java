@@ -57,6 +57,16 @@ public class SpotifyService {
                 .execute();
     }
 
+    // Paginated Data Retrieval Methods
+    public Paging<Track> getUserTopTracks(String timeRange, int limit, int offset) throws IOException, SpotifyWebApiException, org.apache.hc.core5.http.ParseException {
+        return spotifyApi.getUsersTopTracks()
+                .time_range(timeRange)
+                .limit(limit)
+                .offset(offset)
+                .build()
+                .execute();
+    }
+
     public Paging<PlaylistSimplified> getUserPlaylists(int limit, int offset) throws IOException, SpotifyWebApiException, org.apache.hc.core5.http.ParseException {
         User user = getCurrentUser();
         return spotifyApi.getListOfUsersPlaylists(user.getId())

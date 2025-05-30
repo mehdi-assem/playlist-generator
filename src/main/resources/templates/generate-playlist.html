@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Playlist - Spotify Playlist Generator</title>
+  <link rel="stylesheet" th:href="@{/css/unified-styles.css}">
+  <style>
+    /* Page-specific styles for generate playlist */
+    .generation-mode {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .mode-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+        cursor: pointer;
+        padding: 12px;
+        border-radius: 8px;
+        transition: background-color 0.2s;
+    }
+    .mode-header:hover {
+        background-color: #f8f9fa;
+    }
+    .mode-radio {
+        margin-right: 12px;
+        transform: scale(1.2);
+    }
+    .mode-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-right: 12px;
+    }
+    .mode-description {
+        color: #666;
+        font-size: 14px;
+    }
+    .customization-section {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #1db954;
+    }
+    .section-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        margin-bottom: 16px;
+    }
+    .section-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+    }
+    .toggle-icon {
+        transition: transform 0.3s ease;
+        font-size: 18px;
+        color: #666;
+    }
+    .toggle-icon.expanded {
+        transform: rotate(180deg);
+    }
+    .section-content {
+        display: none;
+        animation: slideDown 0.3s ease;
+    }
+    .section-content.expanded {
+        display: block;
+    }
+    .genre-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+    }
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .checkbox-item:hover {
+        background: #f0f0f0;
+        border-color: #1db954;
+    }
+    .checkbox-item input[type="checkbox"] {
+        margin-right: 8px;
+    }
+    .mood-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+    }
+    .mood-button {
+        padding: 12px 16px;
+        border: 2px solid #ddd;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .mood-button:hover {
+        border-color: #1db954;
+        background: #f0f8f0;
+    }
+    .mood-button.selected {
+        border-color: #1db954;
+        background: #1db954;
+        color: white;
+    }
+    .generate-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-top: 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .generate-btn {
+        background: linear-gradient(135deg, #1db954, #1ed760);
+        color: white;
+        border: none;
+        padding: 16px 32px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 200px;
+    }
+    .generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+    }
+    .quick-options {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .quick-option {
+        padding: 8px 16px;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .quick-option:hover {
+        background: #1db954;
+        color: white;
+        border-color: #1db954;
+    }
+
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+  </style>
+</head>
+<body>
+<nav class="navigation">
+  <a href="/api/artists">Top Artists</a>
+  <a href="/api/tracks">Top Tracks</a>
+  <a href="/api/playlists">My Playlists</a>
+  <a href="/api/generate-playlist" class="active">Generate Playlist</a>
+</nav>
+
+<div class="container">
+  <h1 style="text-align: center; color: #333; margin-bottom: 30px;">🎵 Generate Your Perfect Playlist</h1>
+
+  <form id="playlistForm" action="/api/generate-playlist" method="post">
+    <!-- Mode Selection -->
+    <div class="generation-mode">
+      <div class="mode-header" onclick="selectMode('inspired')">
+        <input type="radio" name="mode" value="inspired" id="inspired" class="mode-radio" checked>
+        <div>
+          <div class="mode-title">🎧 Get Inspired</div>
+          <div class="mode-description">Generate based on your listening history and preferences</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="generation-mode">
+      <div class="mode-header" onclick="selectMode('custom')">
+        <input type="radio" name="mode" value="custom" id="custom" class="mode-radio">
+        <div>
+          <div class="mode-title">🎨 Customize</div>
+          <div class="mode-description">Pick your mood, genres, and artists for a tailored experience</div>
+        </div>
+      </div>
+
+      <!-- Customization Options (Hidden by default) -->
+      <div id="customization-options" style="display: none;">
+        <!-- Mood Selection -->
+        <div class="customization-section">
+          <div class="section-toggle" onclick="toggleSection('mood')">
+            <span class="section-title">🎭 What's your mood?</span>
+            <span class="toggle-icon" id="mood-toggle">▼</span>
+          </div>
+          <div class="section-content" id="mood-content">
+            <div class="mood-buttons">
+              <div class="mood-button" onclick="selectMood(this, 'energetic')">⚡ Energetic</div>
+              <div class="mood-button" onclick="selectMood(this, 'chill')">😌 Chill</div>
+              <div class="mood-button" onclick="selectMood(this, 'focus')">🎯 Focus</div>
+              <div class="mood-button" onclick="selectMood(this, 'party')">🎉 Party</div>
+              <div class="mood-button" onclick="selectMood(this, 'workout')">💪 Workout</div>
+              <div class="mood-button" onclick="selectMood(this, 'romantic')">💕 Romantic</div>
+            </div>
+            <input type="hidden" name="mood" id="selected-mood">
+          </div>
+        </div>
+
+        <!-- Genre Selection -->
+        <div class="customization-section">
+          <div class="section-toggle" onclick="toggleSection('genres')">
+            <span class="section-title">🎵 Choose genres (optional)</span>
+            <span class="toggle-icon" id="genres-toggle">▼</span>
+          </div>
+          <div class="section-content" id="genres-content">
+            <div class="genre-grid">
+              <div class="checkbox-item">
+                <input type="checkbox" name="genres" value="pop" id="pop">
+                <label for="pop">Pop</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" name="genres" value="rock" id="rock">
+                <label for="rock">Rock</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" name="genres" value="hip-hop" id="hip-hop">
+                <label for="hip-hop">Hip Hop</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" name="genres" value="electronic" id="electronic">
+                <label for="electronic">Electronic</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" name="genres" value="indie" id="indie">
+                <label for="indie">Indie</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" name="genres" value="jazz" id="jazz">
+                <label for="jazz">Jazz</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Artist Selection -->
+        <div class="customization-section">
+          <div class="section-toggle" onclick="toggleSection('artists')">
+            <span class="section-title">👨‍🎤 Include specific artists (optional)</span>
+            <span class="toggle-icon" id="artists-toggle">▼</span>
+          </div>
+          <div class="section-content" id="artists-content">
+            <div class="form-group">
+              <input type="text" name="artists" placeholder="Type artist names separated by commas..."
+                     style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+              <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                Example: Taylor Swift, The Beatles, Drake
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate Section -->
+    <div class="generate-section">
+      <button type="submit" class="generate-btn">🎶 Generate My Playlist</button>
+
+      <!-- Spinner -->
+      <div id="loading-overlay" style="display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.8); z-index: 1000; align-items:center; justify-content:center;">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="quick-options">
+        <div class="quick-option" onclick="quickGenerate('workout')">🏃‍♂️ Quick Workout Mix</div>
+        <div class="quick-option" onclick="quickGenerate('chill')">☕ Coffee Shop Vibes</div>
+        <div class="quick-option" onclick="quickGenerate('party')">🎉 Party Hits</div>
+        <div class="quick-option" onclick="quickGenerate('discover')">🔍 Discover New Music</div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  function selectMode(mode) {
+      // Update radio buttons
+      document.getElementById('inspired').checked = mode === 'inspired';
+      document.getElementById('custom').checked = mode === 'custom';
+
+      // Show/hide customization options
+      const customOptions = document.getElementById('customization-options');
+      if (mode === 'custom') {
+          customOptions.style.display = 'block';
+          customOptions.style.animation = 'slideDown 0.3s ease';
+      } else {
+          customOptions.style.display = 'none';
+      }
+  }
+
+  function toggleSection(sectionName) {
+      const content = document.getElementById(sectionName + '-content');
+      const toggle = document.getElementById(sectionName + '-toggle');
+
+      if (content.classList.contains('expanded')) {
+          content.classList.remove('expanded');
+          toggle.classList.remove('expanded');
+      } else {
+          content.classList.add('expanded');
+          toggle.classList.add('expanded');
+      }
+  }
+
+  function selectMood(element, mood) {
+      // Remove selection from all mood buttons
+      document.querySelectorAll('.mood-button').forEach(btn => {
+          btn.classList.remove('selected');
+      });
+
+      // Add selection to clicked button
+      element.classList.add('selected');
+      document.getElementById('selected-mood').value = mood;
+  }
+
+  function quickGenerate(type) {
+      // Set mode to inspired
+      selectMode('inspired');
+
+      // Add quick generation type
+      let input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'quickType';
+      input.value = type;
+      document.getElementById('playlistForm').appendChild(input);
+
+      // Submit form
+      document.getElementById('playlistForm').submit();
+  }
+
+  // Auto-expand first section when custom mode is selected
+  document.getElementById('custom').addEventListener('change', function() {
+      if (this.checked) {
+          setTimeout(() => {
+              toggleSection('mood');
+          }, 300);
+      }
+  });
+
+document.getElementById('playlistForm').addEventListener('submit', function (e) {
+  document.getElementById('loading-overlay').style.display = 'flex';
+  this.querySelector('.generate-btn').disabled = true;
+});
+
+</script>
+</body>
+</html>

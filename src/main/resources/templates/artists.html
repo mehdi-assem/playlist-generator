@@ -3,37 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>User Top Artists</title>
-    <link th:replace="~{base :: style}"/>
+    <link th:replace="~{layout :: style}"/>
 </head>
 <body>
-<div th:replace="~{base :: .navigation}"></div>
+<div th:replace="~{layout :: navigation}"></div>
 
-<div th:fragment="content" class="content">
-    <h1>Top Artists</h1>
+<div class="content">
+    <h1>🎤 Your Top Artists</h1>
 
-    <form class="filter-form" th:action="@{/api/artists}" method="get">
-        <label for="timeRange">Select Time Range:</label>
-        <select name="timeRange" id="timeRange" onchange="this.form.submit()">
-            <option th:each="tr : ${timeRanges}"
-                    th:value="${tr.value}"
-                    th:text="${tr.description}"
-                    th:selected="${tr.value == selectedTimeRange}">
-            </option>
-        </select>
-    </form>
-
-    <div id="top-artists-container" class="grid-container" th:if="${not #lists.isEmpty(artists)}">
-        <div th:each="artist : ${artists}" class="grid-item">
-            <h2 th:text="${artist.name}">Artist Name</h2>
-            <img th:src="${artist.images[0].url}" alt="Artist Image"/>
-        </div>
+    <div class="filter-form">
+        <form th:action="@{/api/artists}" method="get">
+            <label for="timeRange">Select Time Range:</label>
+            <select name="timeRange" id="timeRange" onchange="this.form.submit()">
+                <option th:each="tr : ${timeRanges}"
+                        th:value="${tr.value}"
+                        th:text="${tr.description}"
+                        th:selected="${tr.value == selectedTimeRange}">
+                </option>
+            </select>
+        </form>
     </div>
-    <div th:if="${#lists.isEmpty(artists)}">
-        <h2>No artists found.</h2>
+
+    <div th:if="${#lists.isEmpty(artists)}" class="empty-state">
+        <h2>No artists found</h2>
+        <p>Try adjusting your time range or check back after listening to more music!</p>
+    </div>
+
+    <div th:if="${not #lists.isEmpty(artists)}" class="artist-grid">
+        <div th:each="artist : ${artists}" class="artist-card">
+            <img th:src="${artist.images[0].url}" alt="Artist Image" th:alt="${artist.name} + ' Image'"/>
+            <h2 th:text="${artist.name}">Artist Name</h2>
+        </div>
     </div>
 
     <!-- Reusable Pagination Fragment -->
-    <div th:replace="~{base :: pagination('/api/artists', 'timeRange')}"></div>
+    <div th:replace="~{layout :: pagination('/api/artists', 'timeRange')}"></div>
 </div>
 </body>
 </html>

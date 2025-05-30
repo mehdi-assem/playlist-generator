@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generate Playlist</title>
-    <link th:replace="~{base :: style}"/>
+    <link th:replace="~{layout :: style}"/>
 </head>
 <body>
-<div th:replace="~{base :: .navigation}"></div>
+<div th:replace="~{layout :: .navigation}"></div>
 
 <div th:fragment="content" class="content">
     <h1>Generated Playlist</h1>
@@ -22,17 +22,21 @@
         <li th:each="track : ${tracks}" th:text="${track.name}"></li>
     </ul>
 
-    <form action="/api/playlist-generation" method="get">
-        <input type="hidden" name="artists" th:value="${artists}">
-        <button type="submit">Refresh Playlist</button>
-    </form>
+    <div style="text-align: center; margin-top: 30px;">
+        <form action="/api/playlist-generation" method="get">
+            <input type="hidden" name="artists" th:value="${artists}">
+            <button type="submit" class="btn btn-primary">Refresh Playlist</button>
+        </form>
 
-    <form action="/api/confirm-playlist" method="post">
-        <input type="hidden" name="tracks" th:each="track : ${tracks}" th:value="${track.uri}">
-        <button type="submit">Confirm Playlist Creation</button>
-    </form>
+        <form action="/api/confirm-playlist" method="post">
+            <input type="hidden" name="tracks" th:each="track : ${tracks}" th:value="${track.uri}">
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Confirm Playlist Creation</button>
+        </form>
+    </div>
 
-    <a href="/api/select-genres">Restart from Genre Selection</a>
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="/api/select-genres" class="btn btn-secondary">Restart from Genre Selection</a>
+    </div>
 </div>
 </body>
 </html>

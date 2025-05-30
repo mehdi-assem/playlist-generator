@@ -4,22 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playlist Confirmation</title>
-    <link th:replace="~{base :: style}"/>
+    <link th:replace="~{layout :: style}"/>
 </head>
 <body>
-<div th:replace="~{base :: .navigation}"></div>
+<div th:replace="~{layout :: navigation}"></div>
 
-<div th:fragment="content" class="content">
-    <h1>Playlist Confirmation</h1>
+<div class="content">
+    <h1>🎉 Playlist Created Successfully!</h1>
 
-    <p th:text="${message}"></p>
+    <div class="card">
+        <p th:text="${message}" style="font-size: 1.1em; color: #333; text-align: center;">Confirmation message</p>
+    </div>
 
-    <h3>Final Playlist:</h3>
-    <ul>
-        <li th:each="track : ${tracks}" th:text="${track}"></li>
-    </ul>
+    <div class="card">
+        <h3>🎵 Your New Playlist:</h3>
+        <ul>
+            <li th:each="track : ${tracks}" th:text="${track}">Track name</li>
+        </ul>
+    </div>
 
-    <a href="/api/select-genres">Generate Another Playlist</a>
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="/api/generate-playlist" class="btn btn-primary">Generate Another Playlist</a>
+        <a href="/api/playlists" class="btn btn-secondary" style="margin-left: 10px;">View My Playlists</a>
+    </div>
 </div>
 </body>
 </html>
