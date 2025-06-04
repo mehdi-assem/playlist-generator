@@ -10,33 +10,109 @@
 <div th:replace="~{layout :: .navigation}"></div>
 
 <div th:fragment="content" class="content">
-    <h1>Generated Playlist</h1>
+    <!-- Success/Error Messages -->
+    <div th:if="${message}" class="message-card"
+         th:classappend="${showSuccess} ? 'success' : (${showError} ? 'error' : '')">
+        <p th:text="${message}">Message</p>
+    </div>
 
-    <h3>Selected Artists:</h3>
-    <ul>
-        <li th:each="artist : ${artists}" th:text="${artist}"></li>
-    </ul>
+    <!-- Playlist Title -->
+    <h1 th:if="${showSuccess == null or !showSuccess}">🎵 Your Generated Playlist</h1>
+    <h1 th:if="${showSuccess != null and showSuccess and playlistName != null and !#strings.isEmpty(playlistName)}" th:text="'🎉 ' + ${playlistName} + ' - Created Successfully!'">Playlist Created</h1>
+    <h1 th:if="${showSuccess != null and showSuccess and (playlistName == null or #strings.isEmpty(playlistName))}">🎉 Playlist Created Successfully!</h1>
 
-    <h3>Selected Songs (30):</h3>
-    <ul>
-        <li th:each="track : ${tracks}" th:text="${track.name}"></li>
-    </ul>
 
-    <div style="text-align: center; margin-top: 30px;">
-        <form action="/api/playlist-generation" method="get">
-            <input type="hidden" name="artists" th:value="${artists}">
-            <button type="submit" class="btn btn-primary">Refresh Playlist</button>
+    <div class="card">
+        <ul class="track-list">
+            <li th:each="track : ${tracks}" class="track-item">
+                <!-- Album Cover -->
+                <img th:if="${track.album != null and track.album.images != null and track.album.images.length > 0}"
+                     th:src="${track.album.images[0].url}"
+                     th:alt="${track.album.name + ' cover'}"
+                     class="album-cover"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                <div th:if="${track.album == null or track.album.images == null or track.album.images.length == 0}"
+                     class="placeholder-cover">
+                    🎵
+                </div>
+
+                <div class="placeholder-cover" style="display: none;">
+                    🎵
+                </div>
+
+                <!-- Track Information -->
+                <div class="track-info">
+                    <p class="track-name" th:text="${track.name}">Track Name</p>
+                    <p class="track-details">
+                        <span class="artist-name">
+                            <th:block th:each="artist, artistStat : ${track.artists}">
+                                <span th:text="${artist.name}">Artist Name</span>
+                                <span th:if="${!artistStat.last}">, </span>
+                            </th:block>
+                        </span>
+                        <span class="separator">•</span>
+                        <span class="album-name" th:text="${track.album.name}">Album Name</span>
+                    </p>
+                </div>
+
+                <!-- Play Button -->
+                <button class="play-button"
+                        th:classappend="${track.previewUrl == null} ? 'no-preview' : ''"
+                        th:disabled="${track.previewUrl == null}"
+                        th:title="${track.previewUrl != null} ? 'Play preview' : 'No preview available'"
+                        th:onclick="'togglePreview(this, \'' + ${track.previewUrl} + '\')'">
+                    ▶
+                </button>
+
+                <!-- Hidden audio element for preview -->
+                <audio th:if="${track.previewUrl != null}"
+                       th:src="${track.previewUrl}"
+                       preload="none">
+                </audio>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Save Playlist Section (only show if playlist hasn't been saved yet) -->
+    <div th:if="${!showSuccess}" class="card save-playlist-section">
+        <h3>💾 Save This Playlist</h3>
+        <p>Love your playlist? Save it to your Spotify account!</p>
+
+        <form action="/api/confirm-playlist" method="POST" style="text-align: center;">
+            <!-- Hidden inputs to pass track data -->
+            <input type="hidden" th:each="track : ${tracks}"
+                   th:name="tracks"
+                   th:value="${track.uri}">
+
+            <button type="submit" class="save-button">
+                🎵 Save to Spotify
+            </button>
         </form>
 
-        <form action="/api/confirm-playlist" method="post">
-            <input type="hidden" name="tracks" th:each="track : ${tracks}" th:value="${track.uri}">
-            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Confirm Playlist Creation</button>
+        <form action="/api/playlist-generation" method="get" style="margin-top: 15px;">
+            <input type="hidden" name="artists" th:value="${artists}">
+            <button type="submit" class="btn btn-secondary">🔄 Refresh Playlist</button>
         </form>
     </div>
 
-    <div style="text-align: center; margin-top: 30px;">
-        <a href="/api/generate-playlist" class="btn btn-secondary">Restart from Genre Selection</a>
+    <!-- Success Actions (only show after playlist is successfully created) -->
+    <div th:if="${showSuccess}" class="card success-actions">
+        <h3>🎉 What's Next?</h3>
+        <p>Your playlist has been successfully created and saved to your Spotify account!</p>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/api/generate-playlist" class="btn btn-primary">🎵 Generate Another Playlist</a>
+            <a href="/api/playlists" class="btn btn-secondary" style="margin-left: 10px;">📋 View My Playlists</a>
+        </div>
+    </div>
+
+    <!-- Fallback navigation for error states -->
+    <div th:if="${showError}" style="text-align: center; margin-top: 30px;">
+        <a href="/api/generate-playlist" class="btn btn-secondary">🔄 Try Again</a>
     </div>
 </div>
+
+<script th:src="@{/js/playlist_confirmation.js}" type="text/javascript"></script>
 </body>
 </html>

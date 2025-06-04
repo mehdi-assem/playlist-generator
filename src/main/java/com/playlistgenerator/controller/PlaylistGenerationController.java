@@ -102,8 +102,19 @@ public class PlaylistGenerationController {
             List<String> recommendedTracks = googleGeminiService.getMusicRecommendationsAsStrings(prompt);
             List<Track> trackDetails = searchAndGetTrackDetails(recommendedTracks);
 
+            // Filter out tracks without essential data (name, artists, album)
+            List<Track> validTracks = trackDetails.stream()
+                    .filter(track -> track != null &&
+                            track.getName() != null &&
+                            track.getArtists() != null &&
+                            track.getArtists().length > 0 &&
+                            track.getAlbum() != null)
+                    .collect(Collectors.toList());
+
+
+
             // Add data to model
-            model.addAttribute("tracks", trackDetails);
+            model.addAttribute("tracks", validTracks);
             model.addAttribute("mode", formData.getMode());
             model.addAttribute("mood", formData.getMood());
             model.addAttribute("genres", formData.getGenresList());
@@ -112,6 +123,9 @@ public class PlaylistGenerationController {
             model.addAttribute("freeformQuery", formData.getFreeformQuery());
             model.addAttribute("useListeningHistory", formData.isUseListeningHistory());
             model.addAttribute("timeframe", formData.getTimeframe());
+            model.addAttribute("showSuccess", false); // This is the key flag
+            model.addAttribute("playlistName", "");
+
 
             return "playlist_generation";
         } catch (Exception e) {
@@ -205,6 +219,7 @@ public class PlaylistGenerationController {
             // Add data to the model
             model.addAttribute("tracks", trackDetails);
             model.addAttribute("artists", artists);
+            model.addAttribute("showSuccess", false); // This is the key flag
 
             return "playlist_generation";
         } catch (Exception e) {
@@ -216,20 +231,21 @@ public class PlaylistGenerationController {
     @PostMapping("/confirm-playlist")
     public String confirmPlaylist(@RequestParam List<String> tracks, Model model) {
         try {
-            // Fetch the full Track objects from Spotify using the URIs
+            // tracks now contains Spotify URIs, fetch the full Track objects
             List<Track> trackDetails = spotifyService.getSpotifyTrackDetails(tracks);
 
             if (trackDetails.isEmpty()) {
-                model.addAttribute("message", "No valid tracks selected.");
+                model.addAttribute("message", "❌ No valid tracks selected.");
+                model.addAttribute("tracks", new ArrayList<>());
+                model.addAttribute("showError", true);
                 return "playlist_generation";
             }
 
             // Build a prompt describing the playlist for Gemini name generation
-            // Example: Use first 3 artists or track names to describe the playlist
             String artistsSample = trackDetails.stream()
-                    .map(Track::getArtists)            // returns ArtistSimplified[]
-                    .flatMap(Arrays::stream)           // flatten the array stream
-                    .map(ArtistSimplified::getName)    // <-- Use ArtistSimplified here
+                    .map(Track::getArtists)
+                    .flatMap(Arrays::stream)
+                    .map(ArtistSimplified::getName)
                     .distinct()
                     .limit(3)
                     .collect(Collectors.joining(", "));
@@ -239,21 +255,25 @@ public class PlaylistGenerationController {
             // Call Gemini to get a playlist name
             String playlistName = googleGeminiService.getPlaylistName(playlistNamePrompt);
 
-            // Create the playlist on Spotify using the fetched List<Track> and generated name
+            // Create the playlist on Spotify
             spotifyService.createPlaylist(playlistName, trackDetails);
 
-            // Prepare model attributes for confirmation page
-            List<String> trackNames = trackDetails.stream()
-                    .map(Track::getName)
-                    .collect(Collectors.toList());
-            model.addAttribute("message", "Playlist '" + playlistName + "' created successfully!");
-            model.addAttribute("tracks", trackNames);
+            // Return to the same page but with success message and flags
+            model.addAttribute("message", "🎉 Playlist '" + playlistName + "' has been successfully created and saved to your Spotify account!");
+            model.addAttribute("tracks", trackDetails);
             model.addAttribute("playlistName", playlistName);
+            model.addAttribute("showSuccess", true); // This is the key flag
 
-            return "playlist_confirmation";
+            // Don't set showError when successful
+            return "playlist_generation";
+
         } catch (Exception e) {
-            model.addAttribute("message", "Failed to create playlist: " + e.getMessage());
-            System.out.println(e.getMessage());
+            model.addAttribute("message", "❌ Failed to create playlist: " + e.getMessage());
+            model.addAttribute("tracks", tracks != null ?
+                    spotifyService.getSpotifyTrackDetails(tracks) : new ArrayList<>());
+            model.addAttribute("showError", true);
+            // Don't set showSuccess when there's an error
+            System.out.println("Error creating playlist: " + e.getMessage());
             return "playlist_generation";
         }
     }
