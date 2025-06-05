@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.lang.reflect.Array;
 
+import com.playlistgenerator.enums.SpotifyListeningHistoryTimeRange;
 import com.playlistgenerator.service.SpotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,29 +22,6 @@ import se.michaelthelin.spotify.model_objects.specification.*;
 @Controller
 @RequestMapping("/api")
 public class SpotifyController {
-
-    // Enums remain the same as in the original code
-    public enum TimeRange {
-        LONG_TERM("long_term", "Several years"),
-        MEDIUM_TERM("medium_term", "Last 6 months"),
-        SHORT_TERM("short_term", "Last 4 weeks");
-
-        private final String value;
-        private final String description;
-
-        TimeRange(String value, String description) {
-            this.value = value;
-            this.description = description;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-    }
 
     public enum ItemsPerPage {
         TEN(10),
@@ -143,7 +121,7 @@ public class SpotifyController {
 
             model.addAttribute("artists", artistPaging.getItems());
             model.addAttribute("selectedTimeRange", timeRange);
-            model.addAttribute("timeRanges", TimeRange.values());
+            model.addAttribute("timeRanges", SpotifyListeningHistoryTimeRange.values());
             model.addAttribute("currentPage", page);
 
         } catch (Exception e) {
@@ -179,7 +157,7 @@ public class SpotifyController {
 
             model.addAttribute("tracks", trackPaging.getItems());
             model.addAttribute("selectedTimeRange", timeRange);
-            model.addAttribute("timeRanges", TimeRange.values());
+            model.addAttribute("timeRanges", SpotifyListeningHistoryTimeRange.values());
             model.addAttribute("currentPage", page);
 
         } catch (Exception e) {

@@ -2,9 +2,11 @@ package com.playlistgenerator.controller;
 
 import com.playlistgenerator.dto.PlaylistFormData;
 import com.playlistgenerator.dto.PlaylistRequest;
+import com.playlistgenerator.enums.GenerationMode;
 import com.playlistgenerator.service.*;
 import com.playlistgenerator.service.handler.PlaylistModeHandler;
 import com.playlistgenerator.service.handler.PlaylistModeHandlerFactory;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,20 +29,22 @@ public class PlaylistGenerationController {
     private final LastFMService lastFMService;
     private final SpotifyService spotifyService;
     private final GoogleGeminiService googleGeminiService;
-    private final TrackSearchService trackSearchService;
     private final PlaylistModeHandlerFactory modeHandlerFactory;
+    private final TrackProcessingService trackProcessingService;
+    private final PlaylistPromptService playlistPromptService;
 
     // ExecutorService for parallel processing with a limited thread pool to avoid overwhelming APIs
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     public PlaylistGenerationController(LastFMService lastFMService, SpotifyService spotifyService,
                                         GoogleGeminiService googleGeminiService, PlaylistPromptService playlistPromptService,
-                                        TrackSearchService trackSearchService, PlaylistModeHandlerFactory modeHandlerFactory) {
+                                        TrackSearchService trackSearchService, PlaylistModeHandlerFactory modeHandlerFactory, TrackProcessingService trackProcessingService, PlaylistPromptService playlistPromptService1) {
         this.lastFMService = lastFMService;
         this.spotifyService = spotifyService;
         this.googleGeminiService = googleGeminiService;
-        this.trackSearchService = trackSearchService;
         this.modeHandlerFactory = modeHandlerFactory;
+        this.trackProcessingService = trackProcessingService;
+        this.playlistPromptService = playlistPromptService1;
     }
 
     @GetMapping("/select-genres")
@@ -77,61 +81,9 @@ public class PlaylistGenerationController {
     }
 
     @PostMapping("/generate-playlist")
-    public String generatePlaylistFromForm(@ModelAttribute PlaylistFormData formData, Model model) {
-        try {
-            // Get the appropriate handler for the mode
-            PlaylistModeHandler handler = modeHandlerFactory.getHandler(formData.getMode());
-
-            // Handle the mode-specific logic
-            PlaylistRequest request = handler.handleMode(formData);
-
-            // For freeform mode, use the query directly as prompt
-            String prompt;
-            if ("freeform".equals(formData.getMode()) && formData.getFreeformQuery() != null && !formData.getFreeformQuery().trim().isEmpty()) {
-                prompt = enhanceFreeformPrompt(formData.getFreeformQuery(), formData);
-            } else {
-                prompt = request.getPrompt();
-            }
-
-            // Add listening history context if enabled
-            if (formData.isUseListeningHistory()) {
-                prompt = addListeningHistoryContext(prompt, formData.getTimeframe());
-            }
-
-            // Generate the playlist
-            List<String> recommendedTracks = googleGeminiService.getMusicRecommendationsAsStrings(prompt);
-            List<Track> trackDetails = searchAndGetTrackDetails(recommendedTracks);
-
-            // Filter out tracks without essential data (name, artists, album)
-            List<Track> validTracks = trackDetails.stream()
-                    .filter(track -> track != null &&
-                            track.getName() != null &&
-                            track.getArtists() != null &&
-                            track.getArtists().length > 0 &&
-                            track.getAlbum() != null)
-                    .collect(Collectors.toList());
-
-
-
-            // Add data to model
-            model.addAttribute("tracks", validTracks);
-            model.addAttribute("mode", formData.getMode());
-            model.addAttribute("mood", formData.getMood());
-            model.addAttribute("genres", formData.getGenresList());
-            model.addAttribute("decades", formData.getDecadesList());
-            model.addAttribute("selectedArtists", request.getSeedArtists());
-            model.addAttribute("freeformQuery", formData.getFreeformQuery());
-            model.addAttribute("useListeningHistory", formData.isUseListeningHistory());
-            model.addAttribute("timeframe", formData.getTimeframe());
-            model.addAttribute("showSuccess", false); // This is the key flag
-            model.addAttribute("playlistName", "");
-
-
-            return "playlist_generation";
-        } catch (Exception e) {
-            model.addAttribute("message", "Failed to generate playlist: " + e.getMessage());
-            return "generate-playlist";
-        }
+    public String generatePlaylistFromForm(@ModelAttribute PlaylistFormData formData, Model model, HttpSession session) {
+        session.setAttribute("lastPlaylistFormData", formData);
+        return generatePlaylistInternal(formData, model);
     }
 
     private String enhanceFreeformPrompt(String userQuery, PlaylistFormData formData) {
@@ -145,86 +97,40 @@ public class PlaylistGenerationController {
         return enhancedPrompt.toString();
     }
 
-    private String addListeningHistoryContext(String basePrompt, String timeframe) {
-        try {
-            // Get user's top artists and tracks based on timeframe
-            Paging<Artist> topArtists = spotifyService.getUserTopArtists(timeframe, 10, 0);
-            Paging<Track> topTracks = spotifyService.getUserTopTracks(timeframe, 10, 0);
-
-            StringBuilder contextPrompt = new StringBuilder(basePrompt);
-            contextPrompt.append("\n\nUser's listening history context (").append(getTimeframeDescription(timeframe)).append("):\n");
-
-            // Add top artists
-            if (topArtists.getItems().length > 0) {
-                contextPrompt.append("Top Artists: ");
-                for (int i = 0; i < Math.min(5, topArtists.getItems().length); i++) {
-                    if (i > 0) contextPrompt.append(", ");
-                    contextPrompt.append(topArtists.getItems()[i].getName());
-                }
-                contextPrompt.append("\n");
-            }
-
-            // Add top tracks
-            if (topTracks.getItems().length > 0) {
-                contextPrompt.append("Recently Played: ");
-                for (int i = 0; i < Math.min(3, topTracks.getItems().length); i++) {
-                    if (i > 0) contextPrompt.append(", ");
-                    contextPrompt.append(topTracks.getItems()[i].getArtists()[0].getName())
-                            .append(" - ")
-                            .append(topTracks.getItems()[i].getName());
-                }
-                contextPrompt.append("\n");
-            }
-
-            contextPrompt.append("\nPlease consider this listening history when making recommendations, but also include some variety and new discoveries.");
-
-            return contextPrompt.toString();
-        } catch (Exception e) {
-            // If we can't get listening history, just return the original prompt
-            System.err.println("Could not retrieve listening history: " + e.getMessage());
-            return basePrompt;
-        }
-    }
-
-    private String getTimeframeDescription(String timeframe) {
-        switch (timeframe) {
-            case "short_term": return "Last 4 weeks";
-            case "medium_term": return "Last 6 months";
-            case "long_term": return "Several years";
-            default: return "Recent";
-        }
-    }
-
-    private List<Track> searchAndGetTrackDetails(List<String> recommendedTracks) {
-        List<Track> trackDetails = new ArrayList<>();
-
-        trackSearchService.searchTracksWithStrategies(recommendedTracks, trackDetails);
-
-        return trackSearchService.validateAndFilterResults(trackDetails);
-    }
 
     @GetMapping("/playlist-generation")
-    public String generatePlaylist(@RequestParam List<String> artists, Model model) {
+    public String regeneratePlaylist(HttpSession session, Model model) {
+        PlaylistFormData formData = (PlaylistFormData) session.getAttribute("lastPlaylistFormData");
+
+        if (formData == null) {
+            return "redirect:/api/generate-playlist-form";
+        }
+
+        return generatePlaylistInternal(formData, model);
+    }
+
+    private String generatePlaylistInternal(PlaylistFormData formData, Model model) {
         try {
-            String prompt = buildArtistBasedPrompt(artists);
+            PlaylistModeHandler handler = modeHandlerFactory.getHandler(formData.getMode());
+            PlaylistRequest request = handler.handleMode(formData);
 
-            // Get music recommendations from the Gemini API (now returns List<Track> directly)
+            String prompt = "freeform".equals(formData.getMode()) && formData.getFreeformQuery() != null && !formData.getFreeformQuery().trim().isEmpty()
+                    ? enhanceFreeformPrompt(formData.getFreeformQuery(), formData)
+                    : request.getPrompt();
+
+            if (formData.isUseListeningHistory()) {
+                prompt = playlistPromptService.addListeningHistoryContext(prompt, formData.getTimeframe(), spotifyService);
+            }
+
             List<String> recommendedTracks = googleGeminiService.getMusicRecommendationsAsStrings(prompt);
+            List<Track> validTracks = trackProcessingService.processAndFilterTracks(recommendedTracks);
 
-            // Search for the recommended tracks on Spotify and get their details
-            List<Track> trackDetails = new ArrayList<>();
-            trackSearchService.searchTracksWithStrategies(recommendedTracks, trackDetails);
-            trackDetails = trackSearchService.validateAndFilterResults(trackDetails);
-
-            // Add data to the model
-            model.addAttribute("tracks", trackDetails);
-            model.addAttribute("artists", artists);
-            model.addAttribute("showSuccess", false); // This is the key flag
+            setPlaylistModelAttributes(model, validTracks, formData, request);
 
             return "playlist_generation";
         } catch (Exception e) {
             model.addAttribute("message", "Failed to generate playlist: " + e.getMessage());
-            return "select_artists";
+            return "generate-playlist";
         }
     }
 
@@ -276,6 +182,20 @@ public class PlaylistGenerationController {
             System.out.println("Error creating playlist: " + e.getMessage());
             return "playlist_generation";
         }
+    }
+
+    private void setPlaylistModelAttributes(Model model, List<Track> tracks, PlaylistFormData formData, PlaylistRequest request) {
+        model.addAttribute("tracks", tracks);
+        model.addAttribute("mode", formData.getMode());
+        model.addAttribute("mood", formData.getMood());
+        model.addAttribute("genres", formData.getGenresList());
+        model.addAttribute("decades", formData.getDecadesList());
+        model.addAttribute("selectedArtists", request.getSeedArtists());
+        model.addAttribute("freeformQuery", formData.getFreeformQuery());
+        model.addAttribute("useListeningHistory", formData.isUseListeningHistory());
+        model.addAttribute("timeframe", formData.getTimeframe());
+        model.addAttribute("showSuccess", false);
+        model.addAttribute("playlistName", "");
     }
 
     // Clean up ExecutorService when application shuts down

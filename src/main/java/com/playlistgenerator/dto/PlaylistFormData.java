@@ -1,5 +1,7 @@
 package com.playlistgenerator.dto;
 
+import com.playlistgenerator.enums.SpotifyListeningHistoryTimeRange;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +16,7 @@ public class PlaylistFormData {
     private String decades;
     private String freeformQuery;
     private boolean useListeningHistory = true; // Default to true
-    private String timeframe = "medium_term";
+    private String timeframe = SpotifyListeningHistoryTimeRange.MEDIUM_TERM.getValue();
     private String quickType;   // For quick type mode
 
     public PlaylistFormData(String mode, String artists, String mood, String genres, String decades, String freeformQuery, boolean useListeningHistory, String timeframe, String quickType) {

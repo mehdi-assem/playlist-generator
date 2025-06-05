@@ -1,90 +1,136 @@
-  // Updated JavaScript to work with your existing functions
-  function selectMode(mode) {
-      // Update radio buttons (your existing logic)
-      document.getElementById('inspired').checked = mode === 'inspired';
-      document.getElementById('custom').checked = mode === 'custom';
-      document.getElementById('freeform').checked = mode === 'freeform';
+// generate-playlist.js - Only for the playlist generation page
+document.addEventListener('DOMContentLoaded', function() {
 
-      // Show/hide customization options (your existing logic)
-      const customOptions = document.getElementById('customization-options');
-      const freeformOptions = document.getElementById('freeform-options');
+// Make sure we're on the right page
+const playlistForm = document.getElementById('playlistForm');
+if (!playlistForm) {
+    return; // Exit if we're not on the generate playlist page
+}
 
-      if (mode === 'custom') {
-          customOptions.style.display = 'block';
-          customOptions.style.animation = 'slideDown 0.3s ease';
-          freeformOptions.style.display = 'none';
-      } else if (mode === 'freeform') {
-          freeformOptions.style.display = 'block';
-          freeformOptions.style.animation = 'slideDown 0.3s ease';
-          customOptions.style.display = 'none';
-      } else {
-          customOptions.style.display = 'none';
-          freeformOptions.style.display = 'none';
-      }
-  }
+function selectMode(mode) {
+    // Update radio buttons
+    const inspiredRadio = document.getElementById('inspired');
+    const customRadio = document.getElementById('custom');
+    const freeformRadio = document.getElementById('freeform');
 
-  function toggleSection(sectionName) {
-      const content = document.getElementById(sectionName + '-content');
-      const toggle = document.getElementById(sectionName + '-toggle');
+    if (inspiredRadio && customRadio && freeformRadio) {
+        inspiredRadio.checked = mode === 'inspired';
+        customRadio.checked = mode === 'custom';
+        freeformRadio.checked = mode === 'freeform';
+    }
 
-      if (content.classList.contains('expanded')) {
-          content.classList.remove('expanded');
-          toggle.classList.remove('expanded');
-      } else {
-          content.classList.add('expanded');
-          toggle.classList.add('expanded');
-      }
-  }
+    // Show/hide customization options
+    const customOptions = document.getElementById('customization-options');
+    const freeformOptions = document.getElementById('freeform-options');
 
-  function selectMood(element, mood) {
-      // Remove selection from all mood buttons (your existing logic)
-      document.querySelectorAll('.mood-button').forEach(btn => {
-          btn.classList.remove('selected');
-      });
+    if (customOptions && freeformOptions) {
+        if (mode === 'custom') {
+            customOptions.style.display = 'block';
+            customOptions.style.animation = 'slideDown 0.3s ease';
+            freeformOptions.style.display = 'none';
+        } else if (mode === 'freeform') {
+            freeformOptions.style.display = 'block';
+            freeformOptions.style.animation = 'slideDown 0.3s ease';
+            customOptions.style.display = 'none';
+        } else {
+            customOptions.style.display = 'none';
+            freeformOptions.style.display = 'none';
+        }
+    }
+}
 
-      // Add selection to clicked button (your existing logic)
-      element.classList.add('selected');
-      document.getElementById('selected-mood').value = mood;
-  }
+function toggleSection(sectionName) {
+    const content = document.getElementById(sectionName + '-content');
+    const toggle = document.getElementById(sectionName + '-toggle');
 
-  function quickGenerate(type) {
-      // Set mode to inspired (your existing logic)
-      selectMode('inspired');
+    if (content && toggle) {
+        if (content.classList.contains('expanded')) {
+            content.classList.remove('expanded');
+            toggle.classList.remove('expanded');
+        } else {
+            content.classList.add('expanded');
+            toggle.classList.add('expanded');
+        }
+    }
+}
 
-      // Add quick generation type (your existing logic)
-      let input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'quickType';
-      input.value = type;
-      document.getElementById('playlistForm').appendChild(input);
+function selectMood(element, mood) {
+    // Remove selection from all mood buttons
+    const moodButtons = document.querySelectorAll('.mood-button');
+    if (moodButtons) {
+        moodButtons.forEach(btn => {
+            btn.classList.remove('selected');
+        });
+    }
 
-      // Submit form (your existing logic)
-      document.getElementById('playlistForm').submit();
-  }
+    // Add selection to clicked button
+    if (element) {
+        element.classList.add('selected');
+    }
+    const selectedMoodInput = document.getElementById('selected-mood');
+    if (selectedMoodInput) {
+        selectedMoodInput.value = mood;
+    }
+}
 
-  // Auto-expand first section when custom mode is selected (your existing logic)
-  document.getElementById('custom').addEventListener('change', function() {
-      if (this.checked) {
-          setTimeout(() => {
-              toggleSection('mood');
-          }, 300);
-      }
-  });
+function quickGenerate(type) {
+    // Set mode to inspired
+    selectMode('inspired');
 
-  // Your existing form submission logic
-  document.getElementById('playlistForm').addEventListener('submit', function (e) {
-      document.getElementById('loading-overlay').style.display = 'flex';
-      this.querySelector('.generate-btn').disabled = true;
-  });
+    // Add quick generation type
+    if (playlistForm) {
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'quickType';
+        input.value = type;
+        playlistForm.appendChild(input);
 
-  // Toggle listening history timeframe based on checkbox (new functionality)
-  document.addEventListener('DOMContentLoaded', function() {
-      const checkbox = document.getElementById('use-listening-history');
-      const timeframe = document.getElementById('history-timeframe');
+        // Submit form
+        playlistForm.submit();
+    }
+}
 
-      if (checkbox && timeframe) {
-          checkbox.addEventListener('change', function() {
-              timeframe.style.display = this.checked ? 'block' : 'none';
-          });
-      }
-  });
+// Auto-expand first section when custom mode is selected
+const customRadio = document.getElementById('custom');
+if (customRadio) {
+    customRadio.addEventListener('change', function() {
+        if (this.checked) {
+            setTimeout(() => {
+                toggleSection('mood');
+            }, 300);
+        }
+    });
+}
+
+// Form submission logic - show spinner when form is submitted
+if (playlistForm) {
+    playlistForm.addEventListener('submit', function(e) {
+        // Show spinner using shared utility
+        if (window.SpinnerUtils) {
+            window.SpinnerUtils.show();
+        }
+
+        // Disable generate button
+        const generateBtn = this.querySelector('.generate-btn');
+        if (generateBtn) {
+            generateBtn.disabled = true;
+        }
+    });
+}
+
+// Toggle listening history timeframe based on checkbox
+const checkbox = document.getElementById('use-listening-history');
+const timeframe = document.getElementById('history-timeframe');
+
+if (checkbox && timeframe) {
+    checkbox.addEventListener('change', function() {
+        timeframe.style.display = this.checked ? 'block' : 'none';
+    });
+}
+
+// Make functions globally available for onclick handlers in HTML
+window.selectMode = selectMode;
+window.toggleSection = toggleSection;
+window.selectMood = selectMood;
+window.quickGenerate = quickGenerate;
+});

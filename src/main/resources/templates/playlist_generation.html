@@ -90,9 +90,9 @@
             </button>
         </form>
 
-        <form action="/api/playlist-generation" method="get" style="margin-top: 15px;">
-            <input type="hidden" name="artists" th:value="${artists}">
-            <button type="submit" class="btn btn-secondary">🔄 Refresh Playlist</button>
+        <form id="refreshPlaylistForm" action="/api/playlist-generation" method="get" style="margin-top: 15px;" data-debug="refresh-form">
+            <input type="hidden" name="artists" th:value="${artists}" data-debug="artists-input">
+            <button type="submit" class="btn btn-secondary" data-debug="refresh-button">🔄 Refresh Playlist</button>
         </form>
     </div>
 
@@ -102,7 +102,7 @@
         <p>Your playlist has been successfully created and saved to your Spotify account!</p>
 
         <div style="text-align: center; margin-top: 20px;">
-            <a href="/api/generate-playlist" class="btn btn-primary">🎵 Generate Another Playlist</a>
+            <a href="/api/playlist-generation" class="btn btn-primary">🎵 Generate Another Playlist</a>
             <a href="/api/playlists" class="btn btn-secondary" style="margin-left: 10px;">📋 View My Playlists</a>
         </div>
     </div>
@@ -113,6 +113,12 @@
     </div>
 </div>
 
+<!-- Spinner -->
+<div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+</div>
+
+<script th:src="@{/js/spinners-utils.js}" type="text/javascript"></script>
 <script th:src="@{/js/playlist_confirmation.js}" type="text/javascript"></script>
 </body>
 </html>

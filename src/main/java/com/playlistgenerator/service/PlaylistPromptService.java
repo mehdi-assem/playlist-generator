@@ -1,5 +1,7 @@
 package com.playlistgenerator.service;
 
+import com.playlistgenerator.dto.PlaylistFormData;
+import com.playlistgenerator.enums.SpotifyListeningHistoryTimeRange;
 import org.apache.hc.core5.http.ParseException;
 import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -17,6 +19,7 @@ public class PlaylistPromptService {
 
     public String buildQuickTypePrompt(String quickType) {
         String basePrompt = "Return valid JSON format with exactly 30 %s songs. " +
+                "Stay unbiased in your selection. Include hidden gems, indie tracks, and emerging artists from various genres. " +
                 "Use this exact structure without markdown formatting: " +
                 "{\"tracks\": [{\"title\": \"Song Title\", \"artist\": \"Artist Name\"}]} " +
                 "%s " +
@@ -73,7 +76,8 @@ public class PlaylistPromptService {
             promptBuilder.append(" including songs from these artists: ").append(artists);
         }
 
-        promptBuilder.append(". Use this exact structure without markdown formatting: ")
+        promptBuilder.append("Stay unbiased in your selection. Include hidden gems, indie tracks, and emerging artists from various genres. ")
+                .append("Use this exact structure without markdown formatting: ")
                 .append("{\"tracks\": [")
                 .append("{\"title\": \"Song Title\", \"artist\": \"Artist Name\"}")
                 .append("]} ")
@@ -139,5 +143,50 @@ public class PlaylistPromptService {
                 artistsSample.isEmpty() ? "various artists" : artistsSample
         );
         return playlistNamePrompt;
+    }
+
+    public String enhanceFreeformPrompt(String userQuery, PlaylistFormData formData) {
+        StringBuilder enhancedPrompt = new StringBuilder();
+        enhancedPrompt.append("User request: ").append(userQuery).append("\n\n");
+        enhancedPrompt.append("Please generate a music playlist based on this request. ");
+        enhancedPrompt.append("Return exactly 20 songs in the format 'Artist - Song Title', one per line, without numbering or additional text.");
+        return enhancedPrompt.toString();
+    }
+
+    public String addListeningHistoryContext(String basePrompt, String timeframe, SpotifyService spotifyService) {
+        try {
+            Paging<Artist> topArtists = spotifyService.getUserTopArtists(timeframe, 10, 0);
+            Paging<Track> topTracks = spotifyService.getUserTopTracks(timeframe, 10, 0);
+
+            StringBuilder contextPrompt = new StringBuilder(basePrompt);
+            contextPrompt.append("\n\nUser's listening history context (").append(SpotifyListeningHistoryTimeRange.getTimeframeDescription(timeframe)).append("):\n");
+
+            if (topArtists.getItems().length > 0) {
+                contextPrompt.append("Top Artists: ");
+                for (int i = 0; i < Math.min(5, topArtists.getItems().length); i++) {
+                    if (i > 0) contextPrompt.append(", ");
+                    contextPrompt.append(topArtists.getItems()[i].getName());
+                }
+                contextPrompt.append("\n");
+            }
+
+            if (topTracks.getItems().length > 0) {
+                contextPrompt.append("Recently Played: ");
+                for (int i = 0; i < Math.min(3, topTracks.getItems().length); i++) {
+                    if (i > 0) contextPrompt.append(", ");
+                    contextPrompt.append(topTracks.getItems()[i].getArtists()[0].getName())
+                            .append(" - ")
+                            .append(topTracks.getItems()[i].getName());
+                }
+                contextPrompt.append("\n");
+            }
+
+            contextPrompt.append("\nPlease consider this listening history when making recommendations, but also include some variety and new discoveries.");
+
+            return contextPrompt.toString();
+        } catch (Exception e) {
+            System.err.println("Could not retrieve listening history: " + e.getMessage());
+            return basePrompt;
+        }
     }
 }

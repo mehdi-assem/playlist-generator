@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class SpotifyService {
-    private static final long MIN_API_CALL_INTERVAL = 100; // 100ms between calls
+    private static final long MIN_API_CALL_INTERVAL = 50; // 100ms between calls
     private static final int BATCH_SIZE = 20;
     private static final int MAX_RETRIES = 3;
     private static final long BATCH_DELAY = 200;
@@ -112,23 +112,6 @@ public class SpotifyService {
                     return getTrackUrisForArtist(artist, trackNames).stream();
                 })
                 .collect(Collectors.toList());
-    }
-
-    // Track Details
-    public Track getSpotifyTrackDetail(String uri) {
-        return trackDetailsCache.computeIfAbsent(uri, k -> {
-            if (!uri.startsWith("spotify:track:")) return null;
-
-            String trackId = uri.substring("spotify:track:".length());
-            try {
-                applyRateLimit();
-                Track[] tracks = getSeveralTracks(List.of(trackId));
-                return tracks.length > 0 ? tracks[0] : null;
-            } catch (Exception e) {
-                System.err.println("Error fetching details for track: " + uri + " - " + e.getMessage());
-                return null;
-            }
-        });
     }
 
     public List<Track> getSpotifyTrackDetails(List<String> trackUris) {

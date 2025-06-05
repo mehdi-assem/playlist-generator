@@ -7,8 +7,11 @@ import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,47 +23,71 @@ public class TrackSearchService {
         this.spotifyService = spotifyService;
     }
 
-    public void searchTracksWithStrategies(List<String> recommendedTracks, List<Track> trackDetails) {
+    public List<Track> searchTracksWithStrategies(List<String> recommendedTracks) {
+        List<CompletableFuture<Track>> futures = new ArrayList<>();
+
         for (String trackString : recommendedTracks) {
-            try {
-                Paging<Track> searchResult;
-
-                searchResult = searchSingleTrack(trackString);
-
-                if (searchResult.getItems().length > 0) {
-                    Track track = searchResult.getItems()[0];
-                    if (isValidTrack(track)) {
-                        trackDetails.add(track);
+            CompletableFuture<Track> future = CompletableFuture.supplyAsync(() -> {
+                try {
+                    Paging<Track> searchResult = searchSingleTrack(trackString);
+                    if (searchResult.getItems().length > 0) {
+                        Track track = searchResult.getItems()[0];
+                        if (isValidTrack(track)) {
+                            System.out.println("Found: " + track.getName() + " by " + track.getArtists()[0].getName());
+                            return track;
+                        }
+                    } else {
+                        System.out.println("Not found: " + trackString);
                     }
-                    System.out.println("Found: " + searchResult.getItems()[0].getName() + " by " + searchResult.getItems()[0].getArtists()[0].getName());
-                } else {
-                    System.out.println("Not found: " + trackString);
+                } catch (Exception e) {
+                    System.err.println("Error searching for track '" + trackString + "': " + e.getMessage());
                 }
+                return null;
+            });
+            futures.add(future);
+        }
 
-                respectRateLimits();
-            } catch (Exception e) {
-                System.err.println("Error searching for track '" + trackString + "': " + e.getMessage());
+        // Wait for all futures to complete and collect the results
+        List<Track> trackDetails = futures.stream()
+                .map(future -> {
+                    try {
+                        return future.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        System.err.println("Error getting future result: " + e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(track -> track != null)
+                .collect(Collectors.toList());
+
+        return validateAndFilterResults(trackDetails);
+    }
+
+    private Paging<Track> searchSingleTrack(String trackString) {
+        try {
+            Paging<Track> searchResult = executeFullStringSearchStrategy(trackString);
+
+            if (searchResult.getItems().length == 0) {
+                searchResult = executeQuotedSearchStrategy(trackString, searchResult);
             }
+
+            if (searchResult.getItems().length == 0) {
+                searchResult = executeArtistAndTitleSearchStrategy(trackString, searchResult);
+            }
+
+            if (searchResult.getItems().length == 0) {
+                searchResult = executeSimpleSearchStrategy(trackString, searchResult);
+            }
+
+            return searchResult;
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            System.err.println("Error searching for track '" + trackString + "': " + e.getMessage());
+            return createEmptyPaging();
         }
     }
 
-    private static void respectRateLimits() throws InterruptedException {
-        // Add delay to respect rate limits
-        Thread.sleep(100);
-    }
-
-    private Paging<Track> searchSingleTrack(String trackString) throws IOException, SpotifyWebApiException, ParseException {
-        Paging<Track> searchResult;
-        searchResult = executeFullStringSearchStrategy(trackString);
-
-        // Strategy 2: If no results, try with quotes around the full string
-        searchResult = executeQuotedSearchStrategy(trackString, searchResult);
-
-        searchResult = executeArtisteAndTitleSearchStrategy(trackString, searchResult);
-
-        // Strategy 4: Fallback to simple search without prefixes
-        searchResult = executeSimpleSearchStrategy(trackString, searchResult);
-        return searchResult;
+    private Paging<Track> createEmptyPaging() {
+        return new Paging.Builder<Track>().setItems(new Track[0]).build();
     }
 
     private Paging<Track> executeSimpleSearchStrategy(String trackString, Paging<Track> searchResult) throws IOException, SpotifyWebApiException, ParseException {
@@ -70,8 +97,7 @@ public class TrackSearchService {
         return searchResult;
     }
 
-    private Paging<Track> executeArtisteAndTitleSearchStrategy(String trackString, Paging<Track> searchResult) throws IOException, SpotifyWebApiException, ParseException {
-        // Strategy 3: If still no results, try artist:title format
+    private Paging<Track> executeArtistAndTitleSearchStrategy(String trackString, Paging<Track> searchResult) throws IOException, SpotifyWebApiException, ParseException {
         if (searchResult.getItems().length == 0) {
             String[] trackParts = extractTitleAndArtist(trackString);
             if (trackParts.length == 2) {
@@ -91,14 +117,10 @@ public class TrackSearchService {
     }
 
     private Paging<Track> executeFullStringSearchStrategy(String trackString) throws IOException, SpotifyWebApiException, ParseException {
-        Paging<Track> searchResult;
-        // Strategy 1: Search with full string
-        searchResult = spotifyService.searchTracks(trackString);
-        return searchResult;
+        return spotifyService.searchTracks(trackString);
     }
 
     public String[] extractTitleAndArtist(String trackString) {
-        // Handle different separators that might exist
         String[] separators = {" - ", " by ", " ft. ", " feat. "};
 
         for (String separator : separators) {
@@ -110,12 +132,8 @@ public class TrackSearchService {
             }
         }
 
-        // Fallback: assume the format is "Title Artist" and try to split intelligently
-        // This is tricky, so we'll use the original format
         String[] words = trackString.split(" ");
         if (words.length >= 2) {
-            // Try to guess where title ends and artist begins
-            // This is heuristic and might need adjustment
             int splitPoint = words.length / 2;
             String title = String.join(" ", Arrays.copyOfRange(words, 0, splitPoint));
             String artist = String.join(" ", Arrays.copyOfRange(words, splitPoint, words.length));
