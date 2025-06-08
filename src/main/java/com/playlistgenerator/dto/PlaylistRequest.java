@@ -10,6 +10,8 @@ import java.util.Map;
 public class PlaylistRequest {
     private String prompt;                    // The generated prompt to send to Gemini AI
     private List<String> seedArtists;        // Original artists provided by user
+    private List<String> seedTracks;        // Original artists provided by user
+    private List<String> seedAlbums;        // Original artists provided by user
     private GenerationMode mode;             // INSPIRED, CUSTOM, or QUICK_TYPE
     private int playlistSize;                // Number of tracks to generate (usually 30)
     private String mood;                     // For custom mode (optional)
@@ -47,6 +49,8 @@ public class PlaylistRequest {
     public static class Builder {
         private String prompt;
         private List<String> seedArtists = new ArrayList<>();
+        private List<String> seedTracks = new ArrayList<>();
+        private List<String> seedAlbums = new ArrayList<>();
         private GenerationMode mode;
         private int playlistSize = 30;  // default
         private String mood;
@@ -61,6 +65,16 @@ public class PlaylistRequest {
 
         public Builder seedArtists(List<String> seedArtists) {
             this.seedArtists = seedArtists != null ? new ArrayList<>(seedArtists) : new ArrayList<>();
+            return this;
+        }
+
+        public Builder seedTracks(List<String> seedTracks) {
+            this.seedTracks = seedTracks != null ? new ArrayList<>(seedTracks) : new ArrayList<>();
+            return this;
+        }
+
+        public Builder seedAlbums(List<String> seedAlbums) {
+            this.seedAlbums = seedAlbums != null ? new ArrayList<>(seedAlbums) : new ArrayList<>();
             return this;
         }
 

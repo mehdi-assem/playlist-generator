@@ -54,7 +54,7 @@ public class PlaylistPromptService {
         }
     }
 
-    public static String buildCustomPrompt(String mood, List<String> genres, String artists, List<String> artistList) {
+    public static String buildCustomPrompt(String mood, List<String> genres, String artists, List<String> artistList, List<String> trackList, List<String> albumList) {
         String prompt;
         // Handle "Customize" mode
         StringBuilder promptBuilder = new StringBuilder();
@@ -74,6 +74,14 @@ public class PlaylistPromptService {
                 artistList.add(artist.trim());
             }
             promptBuilder.append(" including songs from these artists: ").append(artists);
+        }
+
+        if (trackList != null && !trackList.isEmpty()) {
+            promptBuilder.append(" including these tracks: ").append(String.join(", ", trackList));
+        }
+
+        if (albumList != null && !albumList.isEmpty()) {
+            promptBuilder.append(" including songs from these albums: ").append(String.join(", ", albumList));
         }
 
         promptBuilder.append("Stay unbiased in your selection. Include hidden gems, indie tracks, and emerging artists from various genres. ")

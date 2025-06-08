@@ -14,6 +14,8 @@ import se.michaelthelin.spotify.model_objects.specification.Artist;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Track;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -60,7 +62,7 @@ public class PlaylistGenerationController {
         if (tags == null || tags.isEmpty()) {
             try {
                 // Alternative approach if stream is not working
-                Paging<Artist> topArtists = spotifyService.getUserTopArtists("medium_term", 10, 0);
+                Paging<Artist> topArtists = spotifyService.getUserTopArtists("medium_term", 12, 0);
                 for (Artist artist : topArtists.getItems()) {
                     artists.add(artist.getName());
                 }
@@ -80,12 +82,6 @@ public class PlaylistGenerationController {
         return "generate-playlist"; // This should match your HTML template name
     }
 
-    @PostMapping("/generate-playlist")
-    public String generatePlaylistFromForm(@ModelAttribute PlaylistFormData formData, Model model, HttpSession session) {
-        session.setAttribute("lastPlaylistFormData", formData);
-        return generatePlaylistInternal(formData, model);
-    }
-
     private String enhanceFreeformPrompt(String userQuery, PlaylistFormData formData) {
         StringBuilder enhancedPrompt = new StringBuilder();
         enhancedPrompt.append("User request: ").append(userQuery).append("\n\n");
@@ -97,6 +93,12 @@ public class PlaylistGenerationController {
         return enhancedPrompt.toString();
     }
 
+
+    @PostMapping("/generate-playlist")
+    public String generatePlaylistFromForm(@ModelAttribute PlaylistFormData formData, Model model, HttpSession session) {
+        session.setAttribute("lastPlaylistFormData", formData);
+        return generatePlaylistInternal(formData, model);
+    }
 
     @GetMapping("/playlist-generation")
     public String regeneratePlaylist(HttpSession session, Model model) {
@@ -122,9 +124,25 @@ public class PlaylistGenerationController {
                 prompt = playlistPromptService.addListeningHistoryContext(prompt, formData.getTimeframe(), spotifyService);
             }
 
-            List<String> recommendedTracks = googleGeminiService.getMusicRecommendationsAsStrings(prompt);
-            List<Track> validTracks = trackProcessingService.processAndFilterTracks(recommendedTracks);
+            // Handle artist selection filter
+            List<String> recommendedTracks;
+            if ("selected".equals(formData.getArtistSelection())) {
+                // Generate playlist with selected artists only
+                recommendedTracks = googleGeminiService.getMusicRecommendationsAsStrings(prompt);
+            } else if ("similar".equals(formData.getArtistSelection())) {
+                // Generate playlist with similar artists only
+                List<String> similarArtists = getSimilarArtists(formData.getArtists());
+                String similarArtistsPrompt = buildArtistBasedPrompt(similarArtists);
+                recommendedTracks = googleGeminiService.getMusicRecommendationsAsStrings(similarArtistsPrompt);
+            } else {
+                // Generate playlist with both selected and similar artists
+                List<String> allArtists = new ArrayList<>(Arrays.asList(formData.getArtists().split(",")));
+                allArtists.addAll(getSimilarArtists(formData.getArtists()));
+                String allArtistsPrompt = buildArtistBasedPrompt(allArtists);
+                recommendedTracks = googleGeminiService.getMusicRecommendationsAsStrings(allArtistsPrompt);
+            }
 
+            List<Track> validTracks = trackProcessingService.processAndFilterTracks(recommendedTracks);
             setPlaylistModelAttributes(model, validTracks, formData, request);
 
             return "playlist_generation";
@@ -132,6 +150,15 @@ public class PlaylistGenerationController {
             model.addAttribute("message", "Failed to generate playlist: " + e.getMessage());
             return "generate-playlist";
         }
+    }
+
+    private List<String> getSimilarArtists(String artists) {
+        List<String> similarArtists = new ArrayList<>();
+        String[] artistArray = artists.split(",");
+        for (String artist : artistArray) {
+            similarArtists.addAll(lastFMService.getSimilarArtists(artist.trim()));
+        }
+        return similarArtists;
     }
 
     @PostMapping("/confirm-playlist")
@@ -196,6 +223,31 @@ public class PlaylistGenerationController {
         model.addAttribute("timeframe", formData.getTimeframe());
         model.addAttribute("showSuccess", false);
         model.addAttribute("playlistName", "");
+    }
+
+
+    @GetMapping("/top-artists")
+    public ResponseEntity<Paging<Artist>> getTopArtists(@RequestParam(defaultValue = "medium_term") String timeRange,
+                                                        @RequestParam(defaultValue = "12") int limit,
+                                                        @RequestParam(defaultValue = "0") int offset) {
+        try {
+            Paging<Artist> topArtists = spotifyService.getUserTopArtists(timeRange, limit, offset);
+            return ResponseEntity.ok(topArtists);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/top-tracks")
+    public ResponseEntity<Paging<Track>> getTopTracks(@RequestParam(defaultValue = "medium_term") String timeRange,
+                                                      @RequestParam(defaultValue = "12") int limit,
+                                                      @RequestParam(defaultValue = "0") int offset) {
+        try {
+            Paging<Track> topTracks = spotifyService.getUserTopTracks(timeRange, limit, offset);
+            return ResponseEntity.ok(topTracks);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // Clean up ExecutorService when application shuts down

@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 public class PlaylistFormData {
     private String mode;        // "inspired", "custom", "quickType"
     private String artists;     // Comma-separated artist names
+    private String tracks;
+    private String albums;
     private String mood;        // For custom mode
     private String genres;      // Comma-separated genres
     private String decades;
@@ -18,6 +20,17 @@ public class PlaylistFormData {
     private boolean useListeningHistory = true; // Default to true
     private String timeframe = SpotifyListeningHistoryTimeRange.MEDIUM_TERM.getValue();
     private String quickType;   // For quick type mode
+
+    public String getArtistSelection() {
+        return artistSelection;
+    }
+
+    public void setArtistSelection(String artistSelection) {
+        this.artistSelection = artistSelection;
+    }
+
+    private String artistSelection; // New field
+
 
     public PlaylistFormData(String mode, String artists, String mood, String genres, String decades, String freeformQuery, boolean useListeningHistory, String timeframe, String quickType) {
         this.mode = mode;
@@ -110,6 +123,24 @@ public class PlaylistFormData {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+
+    public String getTracks() {
+        return tracks;
+    }
+
+    public void setTracks(String tracks) {
+        this.tracks = tracks;
+    }
+
+
+    public String getAlbums() {
+        return albums;
+    }
+
+    public void setAlbums(String albums) {
+        this.albums = albums;
     }
 
     @Override

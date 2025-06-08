@@ -4,8 +4,9 @@
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
 .mode-header {
     display: flex;
     align-items: center;
@@ -15,23 +16,28 @@
     border-radius: 8px;
     transition: background-color 0.2s;
 }
+
 .mode-header:hover {
     background-color: #f8f9fa;
 }
+
 .mode-radio {
     margin-right: 12px;
     transform: scale(1.2);
 }
+
 .mode-title {
     font-size: 18px;
     font-weight: 600;
     color: #333;
     margin-right: 12px;
 }
+
 .mode-description {
     color: #666;
     font-size: 14px;
 }
+
 .customization-section {
     margin-top: 20px;
     padding: 20px;
@@ -39,6 +45,7 @@
     border-radius: 8px;
     border-left: 4px solid #1db954;
 }
+
 .section-toggle {
     display: flex;
     align-items: center;
@@ -46,32 +53,39 @@
     cursor: pointer;
     margin-bottom: 16px;
 }
+
 .section-title {
     font-size: 16px;
     font-weight: 500;
     color: #333;
 }
+
 .toggle-icon {
     transition: transform 0.3s ease;
     font-size: 18px;
     color: #666;
 }
+
 .toggle-icon.expanded {
     transform: rotate(180deg);
 }
+
 .section-content {
     display: none;
     animation: slideDown 0.3s ease;
 }
+
 .section-content.expanded {
     display: block;
 }
+
 .genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 8px;
     margin-top: 12px;
 }
+
 .checkbox-item {
     display: flex;
     align-items: center;
@@ -82,19 +96,23 @@
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .checkbox-item:hover {
     background: #f0f0f0;
     border-color: #1db954;
 }
+
 .checkbox-item input[type="checkbox"] {
     margin-right: 8px;
 }
+
 .mood-buttons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 12px;
     margin-top: 12px;
 }
+
 .mood-button {
     padding: 12px 16px;
     border: 2px solid #ddd;
@@ -105,23 +123,27 @@
     font-weight: 500;
     transition: all 0.2s ease;
 }
+
 .mood-button:hover {
     border-color: #1db954;
     background: #f0f8f0;
 }
+
 .mood-button.selected {
     border-color: #1db954;
     background: #1db954;
     color: white;
 }
+
 .generate-section {
     background: white;
     border-radius: 12px;
     padding: 24px;
     margin-top: 20px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
 .generate-btn {
     background: linear-gradient(135deg, #1db954, #1ed760);
     color: white;
@@ -134,10 +156,12 @@
     transition: all 0.2s ease;
     min-width: 200px;
 }
+
 .generate-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
 }
+
 .quick-options {
     display: flex;
     gap: 12px;
@@ -145,6 +169,7 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+
 .quick-option {
     padding: 8px 16px;
     background: #f8f9fa;
@@ -154,8 +179,235 @@
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .quick-option:hover {
     background: #1db954;
     color: white;
     border-color: #1db954;
+}
+
+/* Standardized Grid Styles for Artists, Tracks, and Albums */
+.artist-grid, .track-grid, .album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden; /* Ensure content does not overflow */
+}
+
+.artist-card, .track-card, .album-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fafafa;
+    border: 1px solid transparent;
+    word-break: break-word; /* Ensure text wraps properly */
+    text-align: center; /* Center text */
+}
+
+.artist-card:hover, .track-card:hover, .album-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #1db954;
+    background: white;
+}
+
+.artist-card img, .track-card img, .album-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.album-card img {
+    border-radius: 8px; /* Albums keep square corners */
+}
+
+.artist-card h2, .track-card h2, .album-card h2 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.3;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.artist-card.disabled, .track-card.disabled, .album-card.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Fixed Toggle Button Styles for Selection Options */
+.selection-options {
+    margin-top: 20px;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.selection-options h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.toggle-button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toggle-button {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    color: #333;
+}
+
+.toggle-button:hover {
+    background: #e9ecef;
+    border-color: #1db954;
+}
+
+.toggle-button input[type="radio"] {
+    margin-right: 12px;
+    transform: scale(1.1);
+}
+
+.toggle-button input[type="radio"]:checked {
+    accent-color: #1db954;
+}
+
+.toggle-button:has(input[type="radio"]:checked) {
+    background: #e8f5e8;
+    border-color: #1db954;
+    color: #1db954;
+    font-weight: 500;
+}
+
+/* Improved spacing and structure */
+.generation-mode + .generation-mode {
+    margin-top: 20px;
+}
+
+.customization-section + .customization-section {
+    margin-top: 16px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1db954;
+    box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.1);
+}
+
+.form-group .help-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Decade grid styling to match other grids */
+.decade-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/* Listening history section styling */
+.listening-history-section {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.listening-history-section h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #1db954;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+/* Highlight selected items */
+.artist-card.selected, .track-card.selected, .album-card.selected {
+    border: 2px solid #1db954;
+    border-radius: 8px;
 }

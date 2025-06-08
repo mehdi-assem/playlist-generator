@@ -79,7 +79,7 @@ public class PlaylistPromptBuilder {
     }
 
     // Method signature matches your existing interface
-    public String buildCustomPrompt(String mood, List<String> genres, List<String> artists) {
+    public String buildCustomPrompt(String mood, List<String> genres, List<String> artists, List<String> tracks, List<String> albums) {
         StringBuilder prompt = new StringBuilder();
 
         prompt.append(String.format("Return valid JSON format with exactly %d songs for a music playlist. ",
@@ -95,6 +95,14 @@ public class PlaylistPromptBuilder {
 
         if (artists != null && !artists.isEmpty()) {
             prompt.append("Include artists like: ").append(String.join(", ", artists)).append(". ");
+        }
+
+        if (tracks != null && !tracks.isEmpty()) {
+            prompt.append("Include tracks like: ").append(String.join(", ", tracks)).append(". ");
+        }
+
+        if (albums != null && !albums.isEmpty()) {
+            prompt.append("Include albums like: ").append(String.join(", ", albums)).append(". ");
         }
 
         prompt.append("Format: {\"tracks\": [{\"artist\": \"Artist Name\", \"title\": \"Song Title\"}]}");

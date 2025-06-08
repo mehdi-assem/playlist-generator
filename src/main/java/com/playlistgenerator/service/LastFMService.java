@@ -120,6 +120,38 @@ public class LastFMService {
         return trackNames;
     }
 
+    /**
+     * Get similar artists for a specific artist from Last.fm
+     * Returns a list of similar artist names
+     */
+    public List<String> getSimilarArtists(String artist) {
+        List<String> similarArtists = new ArrayList<>();
+        try {
+            String encodedArtist = URLEncoder.encode(artist, StandardCharsets.UTF_8);
+            String url = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=" +
+                    encodedArtist + "&api_key=" + lastFmConfig.getApiKey() + "&format=json";
+
+            applyRateLimit();
+            String response = restTemplate.getForObject(url, String.class);
+            JSONObject json = new JSONObject(response);
+
+            if (json.has("similarartists") && !json.isNull("similarartists")) {
+                JSONArray artistArray = json.getJSONObject("similarartists").getJSONArray("artist");
+
+                for (int i = 0; i < artistArray.length(); i++) {
+                    JSONObject artistObject = artistArray.getJSONObject(i);
+                    if (artistObject.has("name") && !artistObject.isNull("name")) {
+                        String similarArtistName = artistObject.getString("name");
+                        similarArtists.add(similarArtistName);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error fetching similar artists for artist: " + artist + " - " + e.getMessage());
+        }
+        return similarArtists;
+    }
+
     // Apply rate limiting to API calls
     private synchronized void applyRateLimit() {
         long currentTime = System.currentTimeMillis();

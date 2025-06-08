@@ -147,10 +147,110 @@
           </div>
           <div class="section-content" id="artists-content">
             <div class="form-group">
-              <input type="text" name="artists" placeholder="Type artist names separated by commas..."
-                     style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
-              <div style="font-size: 12px; color: #666; margin-top: 4px;">
+              <input type="text" name="artists" placeholder="Type artist names separated by commas...">
+              <div class="help-text">
                 Example: Taylor Swift, The Beatles, Drake
+              </div>
+            </div>
+
+            <div class="artist-grid" id="artist-grid">
+              <!-- Artist images and names will be displayed here -->
+            </div>
+
+            <!-- Artist Selection Options -->
+            <div class="selection-options">
+              <h4>Selection Options:</h4>
+              <div class="toggle-button-group">
+                <label class="toggle-button">
+                  <input type="radio" name="artistSelection" value="selected" checked>
+                  <span>Songs of the selected artists only</span>
+                </label>
+                <label class="toggle-button">
+                  <input type="radio" name="artistSelection" value="similar">
+                  <span>Songs of similar artists only</span>
+                </label>
+                <label class="toggle-button">
+                  <input type="radio" name="artistSelection" value="both">
+                  <span>Songs of the selected artists + similar artists</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tracks Section -->
+        <div class="customization-section">
+          <div class="section-toggle" onclick="toggleSection('tracks')">
+            <span class="section-title">🎵 Include specific tracks (optional)</span>
+            <span class="toggle-icon" id="tracks-toggle">▼</span>
+          </div>
+          <div class="section-content" id="tracks-content">
+            <div class="form-group">
+              <input type="text" name="tracks" placeholder="Type track names separated by commas...">
+              <div class="help-text">
+                Example: Blinding Lights, Shape of You, Rolling in the Deep
+              </div>
+            </div>
+
+            <div class="track-grid" id="track-grid">
+              <!-- Track images and names will be displayed here -->
+            </div>
+
+            <!-- Track Selection Options -->
+            <div class="selection-options">
+              <h4>Selection Options:</h4>
+              <div class="toggle-button-group">
+                <label class="toggle-button">
+                  <input type="radio" name="trackSelection" value="selected" checked>
+                  <span>Songs of the selected tracks only</span>
+                </label>
+                <label class="toggle-button">
+                  <input type="radio" name="trackSelection" value="similar">
+                  <span>Songs similar to the selected tracks only</span>
+                </label>
+                <label class="toggle-button">
+                  <input type="radio" name="trackSelection" value="both">
+                  <span>Songs of the selected tracks + similar tracks</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Albums Section -->
+        <div class="customization-section">
+          <div class="section-toggle" onclick="toggleSection('albums')">
+            <span class="section-title">📀 Include specific albums (optional)</span>
+            <span class="toggle-icon" id="albums-toggle">▼</span>
+          </div>
+          <div class="section-content" id="albums-content">
+            <div class="form-group">
+              <input type="text" name="albums" placeholder="Type album names separated by commas...">
+              <div class="help-text">
+                Example: After Hours, Thriller, Abbey Road
+              </div>
+            </div>
+
+            <div class="album-grid" id="album-grid">
+              <!-- Album images and names will be displayed here -->
+            </div>
+
+            <!-- Album Selection Options -->
+            <div class="selection-options">
+              <h4>Selection Options:</h4>
+              <div class="toggle-button-group">
+                <label class="toggle-button">
+                  <input type="radio" name="albumSelection" value="selected" checked>
+                  <span>Songs of the selected albums only</span>
+                </label>
+                <label class="toggle-button">
+                  <input type="radio" name="albumSelection" value="similar">
+                  <span>Songs similar to the selected albums only</span>
+                </label>
+                <label class="toggle-button">
+                  <input type="radio" name="albumSelection" value="both">
+                  <span>Songs of the selected albums + similar albums</span>
+                </label>
               </div>
             </div>
           </div>
@@ -177,8 +277,8 @@
             </label>
             <textarea name="freeformQuery" id="freeform-query" rows="4"
                       placeholder="Describe what kind of playlist you want... For example: 'I want upbeat indie rock songs perfect for a road trip with friends' or 'Create a chill jazz playlist for late night studying'"
-                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical; min-height: 100px;"></textarea>
-            <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                      style="resize: vertical; min-height: 100px;"></textarea>
+            <div class="help-text">
               Be as specific as you want! Mention genres, moods, activities, or anything else that describes your ideal playlist.
             </div>
           </div>
@@ -187,16 +287,18 @@
     </div>
 
     <!-- Listening History Options -->
-    <div class="listening-history-section" style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
-      <h3 style="margin: 0 0 15px 0; color: #333; font-size: 16px;">🎧 Listening History Settings</h3>
+    <div class="listening-history-section">
+      <h3>🎧 Listening History Settings</h3>
 
-      <div class="form-group" style="margin-bottom: 15px;">
+      <div class="form-group">
         <label style="display: flex; align-items: center; font-weight: 500;">
           <input type="checkbox" name="useListeningHistory" id="use-listening-history" value="true" checked
                  style="margin-right: 8px;">
           Include my Spotify listening history
         </label>
-        <div style="font-size: 12px; color: #666; margin-top: 4px; margin-left: 20px;">
+        <!-- Add this hidden field -->
+        <input type="hidden" name="_useListeningHistory" value="on">
+        <div class="help-text" style="margin-left: 20px;">
           This helps personalize recommendations based on your music taste
         </div>
       </div>
