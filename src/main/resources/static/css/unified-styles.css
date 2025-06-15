@@ -702,3 +702,36 @@ audio {
   align-items: center;
   justify-content: center;
 }
+
+/* Spotify Link Container */
+.spotify-link-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+/* Spotify Link Button */
+.spotify-link {
+    display: inline-block;
+    background-color: #1db954;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Spotify Link Hover Effect */
+.spotify-link:hover {
+    background-color: #1ed760;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Spotify Link Description */
+.spotify-link-description {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+}

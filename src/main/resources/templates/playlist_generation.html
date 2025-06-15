@@ -21,6 +21,18 @@
     <h1 th:if="${showSuccess != null and showSuccess and playlistName != null and !#strings.isEmpty(playlistName)}" th:text="'🎉 ' + ${playlistName} + ' - Created Successfully!'">Playlist Created</h1>
     <h1 th:if="${showSuccess != null and showSuccess and (playlistName == null or #strings.isEmpty(playlistName))}">🎉 Playlist Created Successfully!</h1>
 
+    <!-- Spotify Link Section -->
+    <div th:if="${showSuccess != null and showSuccess and playlistUrl != null and !#strings.isEmpty(playlistUrl)}"
+         class="spotify-link-container">
+        <a th:href="${playlistUrl}"
+           target="_blank"
+           class="spotify-link">
+            🎵 Open in Spotify
+        </a>
+        <p class="spotify-link-description">
+            Click the link above to listen to your playlist directly in Spotify
+        </p>
+    </div>
 
     <div class="card">
         <ul class="track-list">

@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import se.michaelthelin.spotify.model_objects.specification.Artist;
-import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
-import se.michaelthelin.spotify.model_objects.specification.Paging;
-import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.model_objects.specification.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
@@ -189,12 +186,16 @@ public class PlaylistGenerationController {
             String playlistName = googleGeminiService.getPlaylistName(playlistNamePrompt);
 
             // Create the playlist on Spotify
-            spotifyService.createPlaylist(playlistName, trackDetails);
+            Playlist createdPlaylist = spotifyService.createPlaylist(playlistName, trackDetails);
+
+            // Get the Spotify URL from the playlist
+            String playlistUrl = createdPlaylist.getExternalUrls().get("spotify");
 
             // Return to the same page but with success message and flags
             model.addAttribute("message", "🎉 Playlist '" + playlistName + "' has been successfully created and saved to your Spotify account!");
             model.addAttribute("tracks", trackDetails);
             model.addAttribute("playlistName", playlistName);
+            model.addAttribute("playlistUrl", playlistUrl);
             model.addAttribute("showSuccess", true); // This is the key flag
 
             // Don't set showError when successful

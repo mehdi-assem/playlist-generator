@@ -165,7 +165,7 @@ public class SpotifyService {
         return request.execute();
     }
 
-    public void createPlaylist(String name, List<Track> trackDetails)
+    public Playlist createPlaylist(String name, List<Track> trackDetails)
             throws IOException, SpotifyWebApiException, org.apache.hc.core5.http.ParseException {
         try {
             Playlist playlist = createPlaylist(name);
@@ -179,6 +179,8 @@ public class SpotifyService {
             addTracksToPlaylist(playlist.getId(), trackUris);
 
             System.out.println("Tracks added to playlist successfully.");
+
+            return playlist; // Return the playlist object
 
         } catch (Exception e) {
             System.err.println("Error during playlist creation: " + e.getMessage());
