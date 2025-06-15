@@ -76,6 +76,7 @@ public class PlaylistGenerationController {
 
     @GetMapping("/generate-playlist")
     public String showGeneratePlaylist(Model model) {
+        model.addAttribute("currentPage", "generate-playlist");
         return "generate-playlist"; // This should match your HTML template name
     }
 

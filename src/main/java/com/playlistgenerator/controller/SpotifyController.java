@@ -48,7 +48,7 @@ public class SpotifyController {
             "user-read-recently-played", "user-library-modify", "user-library-read"
     );
 
-    @Value("${artists.redirect.url}")
+    @Value("${generate.playlist.redirect.url}")
     private String redirectUrl;
 
     private final SpotifyService spotifyService;
@@ -119,6 +119,7 @@ public class SpotifyController {
 
             addPaginationAttributes(model, artistPaging, page, itemsPerPage, "artists");
 
+            model.addAttribute("currentPage", "artists");
             model.addAttribute("artists", artistPaging.getItems());
             model.addAttribute("selectedTimeRange", timeRange);
             model.addAttribute("timeRanges", SpotifyListeningHistoryTimeRange.values());
@@ -155,6 +156,7 @@ public class SpotifyController {
 
             addPaginationAttributes(model, trackPaging, page, itemsPerPage, "tracks");
 
+            model.addAttribute("currentPage", "tracks");
             model.addAttribute("tracks", trackPaging.getItems());
             model.addAttribute("selectedTimeRange", timeRange);
             model.addAttribute("timeRanges", SpotifyListeningHistoryTimeRange.values());
@@ -193,6 +195,7 @@ public class SpotifyController {
 
             addPaginationAttributes(model, playlistSimplifiedPaging, page, itemsPerPage, "playlists");
 
+            model.addAttribute("currentPage", "playlists");
             model.addAttribute("playlists", playlistSimplifiedPaging.getItems());
             model.addAttribute("currentPage", page);
 

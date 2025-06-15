@@ -4,6 +4,8 @@ server.port=8080
 custom.server.ip=127.0.0.1
 redirect.server.ip=127.0.0.1
 artists.redirect.url=http://localhost:8080/artists
+generate.playlist.redirect.url=http://localhost:8080/api/generate-playlist
+
 
 spring.mvc.static-path-pattern=/**
 spring.thymeleaf.prefix=classpath:/templates/

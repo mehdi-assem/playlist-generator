@@ -1,0 +1,122 @@
+/* Landing Page Specific Styles */
+.landing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+    color: white;
+}
+
+.landing-card {
+    background: white;
+    border-radius: 12px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+    color: #333;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.landing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.landing-logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 1.5rem;
+}
+
+.landing-title {
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.landing-description {
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    color: #666;
+}
+
+.spotify-btn {
+    background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 1.1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.spotify-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(29, 185, 84, 0.4);
+}
+
+.spotify-icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+/* Spinner animation for loading state */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinner {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 2px solid white;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+/* Responsive adjustments for landing page */
+@media (max-width: 768px) {
+    .landing-card {
+        padding: 2rem;
+    }
+
+    .landing-title {
+        font-size: 1.8rem;
+    }
+
+    .landing-description {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .landing-container {
+        padding: 1rem;
+    }
+
+    .landing-card {
+        padding: 1.5rem;
+    }
+
+    .landing-title {
+        font-size: 1.5rem;
+    }
+
+    .landing-description {
+        font-size: 0.9rem;
+    }
+}
