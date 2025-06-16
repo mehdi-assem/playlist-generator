@@ -9,7 +9,7 @@
 <body>
 <div th:replace="~{layout :: navigation}"></div>
 <div class="container">
-  <h1 style="text-align: center; color: #333; margin-bottom: 30px;">🎵 Generate Your Perfect Playlist</h1>
+  <h1>🎵 Generate Your Perfect Playlist</h1>
 
   <form id="playlistForm" action="/api/generate-playlist" method="post">
     <!-- Mode Selection -->
@@ -390,11 +390,8 @@
       </div>
 
       <div id="history-timeframe" class="form-group">
-        <label for="timeframe" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">
-          📊 Listening history timeframe:
-        </label>
-        <select name="timeframe" id="timeframe"
-                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+        <label for="timeframe" class="form-label">📊 Listening history timeframe:</label>
+        <select name="timeframe" id="timeframe" class="form-select">
           <option value="short_term">Last 4 weeks</option>
           <option value="medium_term" selected>Last 6 months</option>
           <option value="long_term">Several years</option>
