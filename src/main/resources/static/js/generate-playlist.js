@@ -263,3 +263,78 @@ document.addEventListener('DOMContentLoaded', function() {
     window.selectMood = selectMood;
     window.quickGenerate = quickGenerate;
 });
+
+// Genre selection functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const genreInput = document.getElementById('genre-input');
+    const genreItems = document.querySelectorAll('.genre-item');
+
+    // Handle genre item clicks
+    genreItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const genre = this.getAttribute('data-genre');
+            toggleGenreSelection(genre, this);
+        });
+    });
+
+    // Handle manual input changes
+    genreInput.addEventListener('input', function() {
+        updateGenreHighlights();
+    });
+
+    // Handle paste events
+    genreInput.addEventListener('paste', function() {
+        setTimeout(() => {
+            updateGenreHighlights();
+        }, 10);
+    });
+
+    function toggleGenreSelection(genre, element) {
+        const currentGenres = getGenresFromInput();
+
+        if (element.classList.contains('selected')) {
+            // Remove genre
+            element.classList.remove('selected');
+            const updatedGenres = currentGenres.filter(g => g.toLowerCase() !== genre.toLowerCase());
+            updateGenreInput(updatedGenres);
+        } else {
+            // Add genre
+            element.classList.add('selected');
+            if (!currentGenres.some(g => g.toLowerCase() === genre.toLowerCase())) {
+                currentGenres.push(genre);
+                updateGenreInput(currentGenres);
+            }
+        }
+    }
+
+    function getGenresFromInput() {
+        const value = genreInput.value.trim();
+        if (!value) return [];
+
+        return value.split(',')
+            .map(genre => genre.trim())
+            .filter(genre => genre.length > 0);
+    }
+
+    function updateGenreInput(genres) {
+        genreInput.value = genres.join(', ');
+    }
+
+    function updateGenreHighlights() {
+        const inputGenres = getGenresFromInput();
+        const inputGenresLower = inputGenres.map(g => g.toLowerCase());
+
+        genreItems.forEach(item => {
+            const itemGenre = item.getAttribute('data-genre').toLowerCase();
+
+            if (inputGenresLower.includes(itemGenre)) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    }
+
+    // Initialize highlights based on any existing input value
+    updateGenreHighlights();
+});

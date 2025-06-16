@@ -42,48 +42,140 @@
           </div>
           <div class="section-content" id="mood-content">
             <div class="mood-buttons">
+              <!-- Energy Levels -->
               <div class="mood-button" onclick="selectMood(this, 'energetic')">⚡ Energetic</div>
               <div class="mood-button" onclick="selectMood(this, 'chill')">😌 Chill</div>
+              <div class="mood-button" onclick="selectMood(this, 'relaxing')">😴 Relaxing</div>
+
+              <!-- Work & Focus -->
               <div class="mood-button" onclick="selectMood(this, 'focus')">🎯 Focus</div>
+              <div class="mood-button" onclick="selectMood(this, 'deep-focus')">🧘 Deep Focus</div>
+              <div class="mood-button" onclick="selectMood(this, 'study')">📚 Study</div>
+              <div class="mood-button" onclick="selectMood(this, 'work')">💼 Work</div>
+              <div class="mood-button" onclick="selectMood(this, 'instrumental')">🎵 Instrumental</div>
+              <div class="mood-button" onclick="selectMood(this, 'ambient')">🌧️ Ambient</div>
+
+              <!-- Social & Activities -->
               <div class="mood-button" onclick="selectMood(this, 'party')">🎉 Party</div>
               <div class="mood-button" onclick="selectMood(this, 'workout')">💪 Workout</div>
               <div class="mood-button" onclick="selectMood(this, 'romantic')">💕 Romantic</div>
+
+              <!-- Emotional -->
+              <div class="mood-button" onclick="selectMood(this, 'uplifting')">🌅 Uplifting</div>
+              <div class="mood-button" onclick="selectMood(this, 'sad')">😢 Sad</div>
             </div>
             <input type="hidden" name="mood" id="selected-mood">
           </div>
         </div>
 
-        <!-- Genre Selection -->
+
+        <!-- Enhanced Genre Selection -->
         <div class="customization-section">
           <div class="section-toggle" onclick="toggleSection('genres')">
             <span class="section-title">🎵 Choose genres (optional)</span>
             <span class="toggle-icon" id="genres-toggle">▼</span>
           </div>
           <div class="section-content" id="genres-content">
+            <div class="form-group">
+              <input type="text" name="genres" id="genre-input" placeholder="Type genre names separated by commas...">
+              <div class="help-text">
+                Example: pop, rock, jazz, electronic
+              </div>
+            </div>
+
             <div class="genre-grid">
-              <div class="checkbox-item">
-                <input type="checkbox" name="genres" value="pop" id="pop">
-                <label for="pop">Pop</label>
+              <!-- Popular Genres -->
+              <div class="genre-item" data-genre="pop">
+                <span>Pop</span>
               </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="genres" value="rock" id="rock">
-                <label for="rock">Rock</label>
+              <div class="genre-item" data-genre="rock">
+                <span>Rock</span>
               </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="genres" value="hip-hop" id="hip-hop">
-                <label for="hip-hop">Hip Hop</label>
+              <div class="genre-item" data-genre="hip-hop">
+                <span>Hip Hop</span>
               </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="genres" value="electronic" id="electronic">
-                <label for="electronic">Electronic</label>
+              <div class="genre-item" data-genre="electronic">
+                <span>Electronic</span>
               </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="genres" value="indie" id="indie">
-                <label for="indie">Indie</label>
+              <div class="genre-item" data-genre="indie">
+                <span>Indie</span>
               </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="genres" value="jazz" id="jazz">
-                <label for="jazz">Jazz</label>
+              <div class="genre-item" data-genre="jazz">
+                <span>Jazz</span>
+              </div>
+
+              <!-- Additional Genres -->
+              <div class="genre-item" data-genre="r&b">
+                <span>R&B</span>
+              </div>
+              <div class="genre-item" data-genre="country">
+                <span>Country</span>
+              </div>
+              <div class="genre-item" data-genre="classical">
+                <span>Classical</span>
+              </div>
+              <div class="genre-item" data-genre="reggae">
+                <span>Reggae</span>
+              </div>
+              <div class="genre-item" data-genre="blues">
+                <span>Blues</span>
+              </div>
+              <div class="genre-item" data-genre="folk">
+                <span>Folk</span>
+              </div>
+              <div class="genre-item" data-genre="punk">
+                <span>Punk</span>
+              </div>
+              <div class="genre-item" data-genre="metal">
+                <span>Metal</span>
+              </div>
+              <div class="genre-item" data-genre="funk">
+                <span>Funk</span>
+              </div>
+              <div class="genre-item" data-genre="soul">
+                <span>Soul</span>
+              </div>
+              <div class="genre-item" data-genre="disco">
+                <span>Disco</span>
+              </div>
+              <div class="genre-item" data-genre="house">
+                <span>House</span>
+              </div>
+              <div class="genre-item" data-genre="techno">
+                <span>Techno</span>
+              </div>
+              <div class="genre-item" data-genre="dubstep">
+                <span>Dubstep</span>
+              </div>
+              <div class="genre-item" data-genre="ambient">
+                <span>Ambient</span>
+              </div>
+              <div class="genre-item" data-genre="trap">
+                <span>Trap</span>
+              </div>
+              <div class="genre-item" data-genre="alternative">
+                <span>Alternative</span>
+              </div>
+              <div class="genre-item" data-genre="grunge">
+                <span>Grunge</span>
+              </div>
+              <div class="genre-item" data-genre="ska">
+                <span>Ska</span>
+              </div>
+              <div class="genre-item" data-genre="synthwave">
+                <span>Synthwave</span>
+              </div>
+              <div class="genre-item" data-genre="lo-fi">
+                <span>Lo-Fi</span>
+              </div>
+              <div class="genre-item" data-genre="bossa-nova">
+                <span>Bossa Nova</span>
+              </div>
+              <div class="genre-item" data-genre="latin">
+                <span>Latin</span>
+              </div>
+              <div class="genre-item" data-genre="afrobeat">
+                <span>Afrobeat</span>
               </div>
             </div>
           </div>
