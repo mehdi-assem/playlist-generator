@@ -9,7 +9,7 @@
 <div th:replace="~{layout :: .navigation}"></div>
 
 <div th:fragment="content" class="content">
-  <h1>Top Tracks</h1>
+  <h1>My Top Tracks</h1>
   <form class="filter-form" th:action="@{/api/tracks}" method="get">
     <label for="timeRange">Select Time Range:</label>
     <select name="timeRange" id="timeRange" onchange="this.form.submit()">

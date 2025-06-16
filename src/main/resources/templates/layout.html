@@ -12,8 +12,8 @@
 <body>
 <nav class="navigation" th:fragment="navigation">
   <a th:href="@{/api/generate-playlist}" th:classappend="${#strings.equals(navPage, 'generate-playlist') ? 'active' : ''}">Generate Playlist</a>
-  <a th:href="@{/api/artists}" th:classappend="${#strings.equals(navPage, 'artists') ? 'active' : ''}">Top Artists</a>
-  <a th:href="@{/api/tracks}" th:classappend="${#strings.equals(navPage, 'tracks') ? 'active' : ''}">Top Tracks</a>
+  <a th:href="@{/api/artists}" th:classappend="${#strings.equals(navPage, 'artists') ? 'active' : ''}">My Top Artists</a>
+  <a th:href="@{/api/tracks}" th:classappend="${#strings.equals(navPage, 'tracks') ? 'active' : ''}">My Top Tracks</a>
   <a th:href="@{/api/playlists}" th:classappend="${#strings.equals(navPage, 'playlists') ? 'active' : ''}">My Playlists</a>
 </nav>
 

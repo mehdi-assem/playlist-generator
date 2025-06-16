@@ -9,7 +9,7 @@
 <div th:replace="~{layout :: navigation}"></div>
 
 <div th:fragment="content" class="content">
-    <h1>Your Playlists</h1>
+    <h1>My Playlists</h1>
     <div id="playlists-container" class="grid-container" th:if="${not #lists.isEmpty(playlists)}">
         <div th:each="playlist : ${playlists}" class="grid-item">
             <h2 th:text="${playlist.name}">Playlist Name</h2>
