@@ -1,21 +1,21 @@
 # Spotify Playlist Generator
 
-An intelligent playlist generator that creates personalized Spotify playlists using AI and your listening history. Built with Spring Boot and powered by Google Gemini AI, this application analyzes your music preferences and generates curated playlists based on your taste, mood, and custom parameters.
+An intelligent playlist generator that creates personalized Spotify playlists using AI and your listening history. Built with Spring Boot, powered by Google Gemini AI and LastFM API, this application analyzes your music preferences and generates curated playlists based on your taste, mood, and custom parameters.
 
-## ✨ Features
+## Features
 
-- **🎵 Smart Playlist Generation**: AI-powered playlist creation using Google Gemini 2.0 Flash
-- **📊 Listening Analytics**: View your top artists and tracks across different time periods
-- **🎨 Multiple Generation Modes**:
+- **Smart Playlist Generation**: AI-powered playlist creation using Google Gemini 2.0 Flash
+- **Listening Analytics**: View your top artists and tracks across different time periods
+- **Multiple Generation Modes**:
   - **Get Inspired**: Automatic generation based on your listening history
   - **Customize**: Fine-tune with mood, genre, decade, and artist preferences
   - **Free Input**: Natural language playlist requests
-- **🎤 Artist Discovery**: Find similar artists using Last.fm integration
-- **📱 Spotify Integration**: Seamless OAuth authentication and playlist creation
-- **📈 Time-based Analysis**: 4 weeks, 6 months, or long-term listening history
-- **📄 Paginated Views**: Easy navigation through your music library
+- **Artist Discovery**: Find similar artists using Last.fm integration
+- **Spotify Integration**: Seamless OAuth authentication and playlist creation
+- **Time-based Analysis**: 4 weeks, 6 months, or long-term listening history
+- **Paginated Views**: Easy navigation through your music library
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - **Java** with **Maven**
@@ -32,7 +32,7 @@ An intelligent playlist generator that creates personalized Spotify playlists us
 - **Last.fm API** - Artist similarity and music discovery
 - **Google Gemini 2.0 Flash** - AI-powered playlist generation
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before running this application, you'll need:
 
@@ -42,7 +42,7 @@ Before running this application, you'll need:
 - **Last.fm API Account** for music discovery features
 - **Google AI Studio Account** for Gemini API access
 
-## 🔧 Setup Instructions
+## Setup Instructions
 
 ### 1. Clone the Repository
 
@@ -55,18 +55,18 @@ cd playlist-generator
 
 You'll need to obtain API credentials from multiple services:
 
-#### 🎵 Spotify API Setup
+#### Spotify API Setup
 1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
 2. Create a new application
 3. Note your `Client ID` and `Client Secret`
 4. Add your redirect URI (e.g., `http://localhost:8080/callback`)
 
-#### 🎼 Last.fm API Setup
+#### Last.fm API Setup
 1. Visit [Last.fm API Account Creation](https://www.last.fm/api/account/create)
 2. Create an API account
 3. Get your `API Key` and `Shared Secret`
 
-#### 🤖 Google Gemini API Setup
+#### Google Gemini API Setup
 1. Go to [Google AI Studio](https://aistudio.google.com/)
 2. Create a new project or select existing one
 3. Generate an API key for Gemini 2.0 Flash
@@ -147,7 +147,7 @@ mvn spring-boot:run
 
 The application will be available at `http://localhost:8080`
 
-## 🚀 Usage Guide
+## Usage Guide
 
 ### Getting Started
 1. **Launch the app** and click "Continue with Spotify"
@@ -168,7 +168,7 @@ The application will be available at `http://localhost:8080`
 - **Tracks Page**: View your top tracks with time period filters
 - **Playlists Page**: View all your created playlists
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -192,27 +192,17 @@ src/
         └── env.properties.example
 ```
 
-## 🔒 Security Notes
+## Security Notes
 
 - Never commit API keys to version control
 - Use environment variables for production deployment
 - Ensure redirect URIs match your registered app settings
 - Keep your Spotify app in development mode for personal use
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 🌟 Acknowledgments
+## Acknowledgments
 
 - [Spotify Web API Java Wrapper](https://github.com/spotify-web-api-java/spotify-web-api-java) for simplified Spotify integration
 - [Last.fm API](https://www.last.fm/api) for music discovery features
 - [Google Gemini](https://ai.google.dev/) for AI-powered playlist generation
 
 ---
-
-⭐ **Star this repository if you find it helpful!**
