@@ -19,6 +19,9 @@ public class PlaylistPromptService {
 
     public String buildQuickTypePrompt(String quickType) {
         String basePrompt = "Return valid JSON format with exactly 30 %s songs. " +
+                "STRICT REQUIREMENT: ALL songs must be %s. " +
+                "If a song doesn't clearly fit the %s category, do not include it. " +
+                "Verify each song selection against the requirements before including it. " +
                 "Stay unbiased in your selection. Include hidden gems, indie tracks, and emerging artists from various genres. " +
                 "Use this exact structure without markdown formatting: " +
                 "{\"tracks\": [{\"title\": \"Song Title\", \"artist\": \"Artist Name\"}]} " +
@@ -58,14 +61,20 @@ public class PlaylistPromptService {
         String prompt;
         // Handle "Customize" mode
         StringBuilder promptBuilder = new StringBuilder();
+
+        // Add reasoning instruction
+        promptBuilder.append("Before selecting each song, verify it meets ALL specified criteria. ");
+        promptBuilder.append("For each song, mentally check: Does this match the mood? Does this fit the genre? Is this from the right artist/style? ");
+
         promptBuilder.append("Return valid JSON format with exactly 30 songs");
 
         if (mood != null && !mood.isEmpty()) {
-            promptBuilder.append(" with a ").append(mood).append(" mood");
+            promptBuilder.append(" that MUST have a ").append(mood).append(" mood");
         }
 
         if (genres != null && !genres.isEmpty()) {
-            promptBuilder.append(" from these genres: ").append(String.join(", ", genres));
+            promptBuilder.append(" that MUST be from these genres ONLY: ").append(String.join(", ", genres));
+            promptBuilder.append(". Songs for other genres are excluded.");
         }
 
         if (artists != null && !artists.trim().isEmpty()) {
@@ -155,9 +164,22 @@ public class PlaylistPromptService {
 
     public String enhanceFreeformPrompt(String userQuery, PlaylistFormData formData) {
         StringBuilder enhancedPrompt = new StringBuilder();
+
         enhancedPrompt.append("User request: ").append(userQuery).append("\n\n");
-        enhancedPrompt.append("Please generate a music playlist based on this request. ");
-        enhancedPrompt.append("Return exactly 20 songs in the format 'Artist - Song Title', one per line, without numbering or additional text.");
+
+        // Add constraint parsing
+        enhancedPrompt.append("Analyze the user's request carefully. Identify: ");
+        enhancedPrompt.append("1) Primary genre/style requirements ");
+        enhancedPrompt.append("2) Mood or energy level ");
+        enhancedPrompt.append("3) Any specific artists or time periods mentioned ");
+        enhancedPrompt.append("4) Any explicit exclusions or preferences\n\n");
+
+        enhancedPrompt.append("STRICT REQUIREMENT: Every song must directly relate to the user's request. ");
+        enhancedPrompt.append("Do not include songs that only tangentially relate or are 'close enough'. ");
+
+        enhancedPrompt.append("Generate exactly 30 songs that ALL fit the request criteria. ");
+        enhancedPrompt.append("Format: 'Artist - Song Title', one per line, without numbering or additional text.");
+
         return enhancedPrompt.toString();
     }
 
@@ -191,10 +213,17 @@ public class PlaylistPromptService {
 
             contextPrompt.append("\nPlease consider this listening history when making recommendations, but also include some variety and new discoveries.");
 
+            contextPrompt.append("\nIMPORTANT: Use this listening history as a STRONG guide for style and preferences. ");
+            contextPrompt.append("70% of recommendations should be similar to these artists/tracks in genre, energy, or style. ");
+            contextPrompt.append("30% can be discovery tracks, but they must still fit the same general musical territory. ");
+            contextPrompt.append("Do not include songs that would seem completely out of place in this context.");
+
             return contextPrompt.toString();
         } catch (Exception e) {
             System.err.println("Could not retrieve listening history: " + e.getMessage());
             return basePrompt;
         }
+
+
     }
 }

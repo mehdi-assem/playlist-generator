@@ -7,18 +7,20 @@
 <body>
 <div th:replace="~{layout :: .navigation}"></div>
 
-<div th:fragment="content" class="content">
-    <h1>Your Playlist</h1>
-    <ul>
-        {% for song in playlist %}
-        <li>{{ song }}</li>
-        {% endfor %}
-    </ul>
-    <form action="/confirm-playlist" method="get">
-        <input type="text" name="name" placeholder="Playlist Name" required>
-        <input type="hidden" name="songs" value="{{ playlist }}">
-        <button type="submit">Save to Spotify</button>
-    </form>
+<div class="main-wrapper">
+    <div th:fragment="content" class="content">
+        <h1>Your Playlist</h1>
+        <ul>
+            {% for song in playlist %}
+            <li>{{ song }}</li>
+            {% endfor %}
+        </ul>
+        <form action="/confirm-playlist" method="get">
+            <input type="text" name="name" placeholder="Playlist Name" required>
+            <input type="hidden" name="songs" value="{{ playlist }}">
+            <button type="submit">Save to Spotify</button>
+        </form>
+    </div>
 </div>
 </body>
 </html>

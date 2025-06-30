@@ -8,414 +8,417 @@
 </head>
 <body>
 <div th:replace="~{layout :: navigation}"></div>
-<div class="container">
-  <h1>Generate Your Perfect Playlist</h1>
 
-  <form id="playlistForm" action="/api/generate-playlist" method="post">
-    <!-- Mode Selection -->
-    <div class="generation-mode">
-      <div class="mode-header" onclick="selectMode('inspired')">
-        <input type="radio" name="mode" value="inspired" id="inspired" class="mode-radio" checked>
-        <div>
-          <div class="mode-title">🎧 Get Inspired</div>
-          <div class="mode-description">Generate based on your listening history and preferences</div>
-        </div>
-      </div>
-    </div>
+<div class="main-wrapper">
+  <div class="container" style="max-width: 800px; margin: 0 auto;">
+    <h1>Generate Your Perfect Playlist</h1>
 
-    <div class="generation-mode">
-      <div class="mode-header" onclick="selectMode('custom')">
-        <input type="radio" name="mode" value="custom" id="custom" class="mode-radio">
-        <div>
-          <div class="mode-title">🎨 Customize</div>
-          <div class="mode-description">Pick your mood, genres, and artists for a tailored experience</div>
-        </div>
-      </div>
-
-      <!-- Customization Options (Hidden by default) -->
-      <div id="customization-options" style="display: none;">
-        <!-- Mood Selection -->
-        <div class="customization-section">
-          <div class="section-toggle" onclick="toggleSection('mood')">
-            <span class="section-title">🎭 What's your mood?</span>
-            <span class="toggle-icon" id="mood-toggle">▼</span>
+    <form id="playlistForm" action="/api/generate-playlist" method="post">
+      <!-- Mode Selection -->
+      <div class="generation-mode">
+        <div class="mode-header" onclick="selectMode('inspired')">
+          <input type="radio" name="mode" value="inspired" id="inspired" class="mode-radio" checked>
+          <div>
+            <div class="mode-title">🎧 Get Inspired</div>
+            <div class="mode-description">Generate based on your listening history and preferences</div>
           </div>
-          <div class="section-content" id="mood-content">
-            <div class="mood-buttons">
-              <!-- Energy Levels -->
-              <div class="mood-button" onclick="selectMood(this, 'energetic')">⚡ Energetic</div>
-              <div class="mood-button" onclick="selectMood(this, 'chill')">😌 Chill</div>
-              <div class="mood-button" onclick="selectMood(this, 'relaxing')">😴 Relaxing</div>
+        </div>
+      </div>
 
-              <!-- Work & Focus -->
-              <div class="mood-button" onclick="selectMood(this, 'focus')">🎯 Focus</div>
-              <div class="mood-button" onclick="selectMood(this, 'deep-focus')">🧘 Deep Focus</div>
-              <div class="mood-button" onclick="selectMood(this, 'study')">📚 Study</div>
-              <div class="mood-button" onclick="selectMood(this, 'work')">💼 Work</div>
-              <div class="mood-button" onclick="selectMood(this, 'instrumental')">🎵 Instrumental</div>
-              <div class="mood-button" onclick="selectMood(this, 'ambient')">🌧️ Ambient</div>
+      <div class="generation-mode">
+        <div class="mode-header" onclick="selectMode('custom')">
+          <input type="radio" name="mode" value="custom" id="custom" class="mode-radio">
+          <div>
+            <div class="mode-title">🎨 Customize</div>
+            <div class="mode-description">Pick your mood, genres, and artists for a tailored experience</div>
+          </div>
+        </div>
 
-              <!-- Social & Activities -->
-              <div class="mood-button" onclick="selectMood(this, 'party')">🎉 Party</div>
-              <div class="mood-button" onclick="selectMood(this, 'workout')">💪 Workout</div>
-              <div class="mood-button" onclick="selectMood(this, 'romantic')">💕 Romantic</div>
-
-              <!-- Emotional -->
-              <div class="mood-button" onclick="selectMood(this, 'uplifting')">🌅 Uplifting</div>
-              <div class="mood-button" onclick="selectMood(this, 'sad')">😢 Sad</div>
+        <!-- Customization Options (Hidden by default) -->
+        <div id="customization-options" style="display: none;">
+          <!-- Mood Selection -->
+          <div class="customization-section">
+            <div class="section-toggle" onclick="toggleSection('mood')">
+              <span class="section-title">🎭 What's your mood?</span>
+              <span class="toggle-icon" id="mood-toggle">▼</span>
             </div>
-            <input type="hidden" name="mood" id="selected-mood">
+            <div class="section-content" id="mood-content">
+              <div class="mood-buttons">
+                <!-- Energy Levels -->
+                <div class="mood-button" onclick="selectMood(this, 'energetic')">⚡ Energetic</div>
+                <div class="mood-button" onclick="selectMood(this, 'chill')">😌 Chill</div>
+                <div class="mood-button" onclick="selectMood(this, 'relaxing')">😴 Relaxing</div>
+
+                <!-- Work & Focus -->
+                <div class="mood-button" onclick="selectMood(this, 'focus')">🎯 Focus</div>
+                <div class="mood-button" onclick="selectMood(this, 'deep-focus')">🧘 Deep Focus</div>
+                <div class="mood-button" onclick="selectMood(this, 'study')">📚 Study</div>
+                <div class="mood-button" onclick="selectMood(this, 'work')">💼 Work</div>
+                <div class="mood-button" onclick="selectMood(this, 'instrumental')">🎵 Instrumental</div>
+                <div class="mood-button" onclick="selectMood(this, 'ambient')">🌧️ Ambient</div>
+
+                <!-- Social & Activities -->
+                <div class="mood-button" onclick="selectMood(this, 'party')">🎉 Party</div>
+                <div class="mood-button" onclick="selectMood(this, 'workout')">💪 Workout</div>
+                <div class="mood-button" onclick="selectMood(this, 'romantic')">💕 Romantic</div>
+
+                <!-- Emotional -->
+                <div class="mood-button" onclick="selectMood(this, 'uplifting')">🌅 Uplifting</div>
+                <div class="mood-button" onclick="selectMood(this, 'sad')">😢 Sad</div>
+              </div>
+              <input type="hidden" name="mood" id="selected-mood">
+            </div>
+          </div>
+
+
+          <!-- Enhanced Genre Selection -->
+          <div class="customization-section">
+            <div class="section-toggle" onclick="toggleSection('genres')">
+              <span class="section-title">🎵 Choose genres (optional)</span>
+              <span class="toggle-icon" id="genres-toggle">▼</span>
+            </div>
+            <div class="section-content" id="genres-content">
+              <div class="form-group">
+                <input type="text" name="genres" id="genre-input" placeholder="Type genre names separated by commas...">
+                <div class="help-text">
+                  Example: pop, rock, jazz, electronic
+                </div>
+              </div>
+
+              <div class="genre-grid">
+                <!-- Popular Genres -->
+                <div class="genre-item" data-genre="pop">
+                  <span>Pop</span>
+                </div>
+                <div class="genre-item" data-genre="rock">
+                  <span>Rock</span>
+                </div>
+                <div class="genre-item" data-genre="hip-hop">
+                  <span>Hip Hop</span>
+                </div>
+                <div class="genre-item" data-genre="electronic">
+                  <span>Electronic</span>
+                </div>
+                <div class="genre-item" data-genre="indie">
+                  <span>Indie</span>
+                </div>
+                <div class="genre-item" data-genre="jazz">
+                  <span>Jazz</span>
+                </div>
+
+                <!-- Additional Genres -->
+                <div class="genre-item" data-genre="r&b">
+                  <span>R&B</span>
+                </div>
+                <div class="genre-item" data-genre="country">
+                  <span>Country</span>
+                </div>
+                <div class="genre-item" data-genre="classical">
+                  <span>Classical</span>
+                </div>
+                <div class="genre-item" data-genre="reggae">
+                  <span>Reggae</span>
+                </div>
+                <div class="genre-item" data-genre="blues">
+                  <span>Blues</span>
+                </div>
+                <div class="genre-item" data-genre="folk">
+                  <span>Folk</span>
+                </div>
+                <div class="genre-item" data-genre="punk">
+                  <span>Punk</span>
+                </div>
+                <div class="genre-item" data-genre="metal">
+                  <span>Metal</span>
+                </div>
+                <div class="genre-item" data-genre="funk">
+                  <span>Funk</span>
+                </div>
+                <div class="genre-item" data-genre="soul">
+                  <span>Soul</span>
+                </div>
+                <div class="genre-item" data-genre="disco">
+                  <span>Disco</span>
+                </div>
+                <div class="genre-item" data-genre="house">
+                  <span>House</span>
+                </div>
+                <div class="genre-item" data-genre="techno">
+                  <span>Techno</span>
+                </div>
+                <div class="genre-item" data-genre="dubstep">
+                  <span>Dubstep</span>
+                </div>
+                <div class="genre-item" data-genre="ambient">
+                  <span>Ambient</span>
+                </div>
+                <div class="genre-item" data-genre="trap">
+                  <span>Trap</span>
+                </div>
+                <div class="genre-item" data-genre="alternative">
+                  <span>Alternative</span>
+                </div>
+                <div class="genre-item" data-genre="grunge">
+                  <span>Grunge</span>
+                </div>
+                <div class="genre-item" data-genre="ska">
+                  <span>Ska</span>
+                </div>
+                <div class="genre-item" data-genre="synthwave">
+                  <span>Synthwave</span>
+                </div>
+                <div class="genre-item" data-genre="lo-fi">
+                  <span>Lo-Fi</span>
+                </div>
+                <div class="genre-item" data-genre="bossa-nova">
+                  <span>Bossa Nova</span>
+                </div>
+                <div class="genre-item" data-genre="latin">
+                  <span>Latin</span>
+                </div>
+                <div class="genre-item" data-genre="afrobeat">
+                  <span>Afrobeat</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Decades Selection -->
+          <div class="customization-section">
+            <div class="section-toggle" onclick="toggleSection('decades')">
+              <span class="section-title">📅 Choose decades (optional)</span>
+              <span class="toggle-icon" id="decades-toggle">▼</span>
+            </div>
+            <div class="section-content" id="decades-content">
+              <div class="decade-grid">
+                <div class="checkbox-item">
+                  <input type="checkbox" name="decades" value="2020s" id="2020s">
+                  <label for="2020s">2020s</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" name="decades" value="2010s" id="2010s">
+                  <label for="2010s">2010s</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" name="decades" value="2000s" id="2000s">
+                  <label for="2000s">2000s</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" name="decades" value="1990s" id="1990s">
+                  <label for="1990s">90s</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" name="decades" value="1980s" id="1980s">
+                  <label for="1980s">80s</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" name="decades" value="1970s" id="1970s">
+                  <label for="1970s">70s</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" name="decades" value="1960s" id="1960s">
+                  <label for="1960s">60s</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" name="decades" value="classic" id="classic">
+                  <label for="classic">Pre-60s</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Artist Selection -->
+          <div class="customization-section">
+            <div class="section-toggle" onclick="toggleSection('artists')">
+              <span class="section-title">👨‍🎤 Include specific artists (optional)</span>
+              <span class="toggle-icon" id="artists-toggle">▼</span>
+            </div>
+            <div class="section-content" id="artists-content">
+              <div class="form-group">
+                <input type="text" name="artists" placeholder="Type artist names separated by commas...">
+                <div class="help-text">
+                  Example: Taylor Swift, The Beatles, Drake
+                </div>
+              </div>
+
+              <div class="artist-grid" id="artist-grid">
+                <!-- Artist images and names will be displayed here -->
+              </div>
+
+              <!-- Artist Selection Options -->
+              <div class="selection-options">
+                <h4>Selection Options:</h4>
+                <div class="toggle-button-group">
+                  <label class="toggle-button">
+                    <input type="radio" name="artistSelection" value="selected" checked>
+                    <span>Songs of the selected artists only</span>
+                  </label>
+                  <label class="toggle-button">
+                    <input type="radio" name="artistSelection" value="similar">
+                    <span>Songs of similar artists only</span>
+                  </label>
+                  <label class="toggle-button">
+                    <input type="radio" name="artistSelection" value="both">
+                    <span>Songs of the selected artists + similar artists</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tracks Section -->
+          <div class="customization-section">
+            <div class="section-toggle" onclick="toggleSection('tracks')">
+              <span class="section-title">🎵 Include specific tracks (optional)</span>
+              <span class="toggle-icon" id="tracks-toggle">▼</span>
+            </div>
+            <div class="section-content" id="tracks-content">
+              <div class="form-group">
+                <input type="text" name="tracks" placeholder="Type track names separated by commas...">
+                <div class="help-text">
+                  Example: Blinding Lights, Shape of You, Rolling in the Deep
+                </div>
+              </div>
+
+              <div class="track-grid" id="track-grid">
+                <!-- Track images and names will be displayed here -->
+              </div>
+
+              <!-- Track Selection Options -->
+              <div class="selection-options">
+                <h4>Selection Options:</h4>
+                <div class="toggle-button-group">
+                  <label class="toggle-button">
+                    <input type="radio" name="trackSelection" value="selected" checked>
+                    <span>Songs of the selected tracks only</span>
+                  </label>
+                  <label class="toggle-button">
+                    <input type="radio" name="trackSelection" value="similar">
+                    <span>Songs similar to the selected tracks only</span>
+                  </label>
+                  <label class="toggle-button">
+                    <input type="radio" name="trackSelection" value="both">
+                    <span>Songs of the selected tracks + similar tracks</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Albums Section -->
+          <div class="customization-section">
+            <div class="section-toggle" onclick="toggleSection('albums')">
+              <span class="section-title">📀 Include specific albums (optional)</span>
+              <span class="toggle-icon" id="albums-toggle">▼</span>
+            </div>
+            <div class="section-content" id="albums-content">
+              <div class="form-group">
+                <input type="text" name="albums" placeholder="Type album names separated by commas...">
+                <div class="help-text">
+                  Example: After Hours, Thriller, Abbey Road
+                </div>
+              </div>
+
+              <div class="album-grid" id="album-grid">
+                <!-- Album images and names will be displayed here -->
+              </div>
+
+              <!-- Album Selection Options -->
+              <div class="selection-options">
+                <h4>Selection Options:</h4>
+                <div class="toggle-button-group">
+                  <label class="toggle-button">
+                    <input type="radio" name="albumSelection" value="selected" checked>
+                    <span>Songs of the selected albums only</span>
+                  </label>
+                  <label class="toggle-button">
+                    <input type="radio" name="albumSelection" value="similar">
+                    <span>Songs similar to the selected albums only</span>
+                  </label>
+                  <label class="toggle-button">
+                    <input type="radio" name="albumSelection" value="both">
+                    <span>Songs of the selected albums + similar albums</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Free Input Mode -->
+      <div class="generation-mode">
+        <div class="mode-header" onclick="selectMode('freeform')">
+          <input type="radio" name="mode" value="freeform" id="freeform" class="mode-radio">
+          <div>
+            <div class="mode-title">✍️ Free Input</div>
+            <div class="mode-description">Describe exactly what you want in your own words</div>
           </div>
         </div>
 
-
-        <!-- Enhanced Genre Selection -->
-        <div class="customization-section">
-          <div class="section-toggle" onclick="toggleSection('genres')">
-            <span class="section-title">🎵 Choose genres (optional)</span>
-            <span class="toggle-icon" id="genres-toggle">▼</span>
-          </div>
-          <div class="section-content" id="genres-content">
+        <!-- Free Input Options (Hidden by default) -->
+        <div id="freeform-options" style="display: none;">
+          <div class="customization-section">
             <div class="form-group">
-              <input type="text" name="genres" id="genre-input" placeholder="Type genre names separated by commas...">
+              <label for="freeform-query" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">
+                🎵 Describe your perfect playlist:
+              </label>
+              <textarea name="freeformQuery" id="freeform-query" rows="4"
+                        placeholder="Describe what kind of playlist you want... For example: 'I want upbeat indie rock songs perfect for a road trip with friends' or 'Create a chill jazz playlist for late night studying'"
+                        style="resize: vertical; min-height: 100px;"></textarea>
               <div class="help-text">
-                Example: pop, rock, jazz, electronic
-              </div>
-            </div>
-
-            <div class="genre-grid">
-              <!-- Popular Genres -->
-              <div class="genre-item" data-genre="pop">
-                <span>Pop</span>
-              </div>
-              <div class="genre-item" data-genre="rock">
-                <span>Rock</span>
-              </div>
-              <div class="genre-item" data-genre="hip-hop">
-                <span>Hip Hop</span>
-              </div>
-              <div class="genre-item" data-genre="electronic">
-                <span>Electronic</span>
-              </div>
-              <div class="genre-item" data-genre="indie">
-                <span>Indie</span>
-              </div>
-              <div class="genre-item" data-genre="jazz">
-                <span>Jazz</span>
-              </div>
-
-              <!-- Additional Genres -->
-              <div class="genre-item" data-genre="r&b">
-                <span>R&B</span>
-              </div>
-              <div class="genre-item" data-genre="country">
-                <span>Country</span>
-              </div>
-              <div class="genre-item" data-genre="classical">
-                <span>Classical</span>
-              </div>
-              <div class="genre-item" data-genre="reggae">
-                <span>Reggae</span>
-              </div>
-              <div class="genre-item" data-genre="blues">
-                <span>Blues</span>
-              </div>
-              <div class="genre-item" data-genre="folk">
-                <span>Folk</span>
-              </div>
-              <div class="genre-item" data-genre="punk">
-                <span>Punk</span>
-              </div>
-              <div class="genre-item" data-genre="metal">
-                <span>Metal</span>
-              </div>
-              <div class="genre-item" data-genre="funk">
-                <span>Funk</span>
-              </div>
-              <div class="genre-item" data-genre="soul">
-                <span>Soul</span>
-              </div>
-              <div class="genre-item" data-genre="disco">
-                <span>Disco</span>
-              </div>
-              <div class="genre-item" data-genre="house">
-                <span>House</span>
-              </div>
-              <div class="genre-item" data-genre="techno">
-                <span>Techno</span>
-              </div>
-              <div class="genre-item" data-genre="dubstep">
-                <span>Dubstep</span>
-              </div>
-              <div class="genre-item" data-genre="ambient">
-                <span>Ambient</span>
-              </div>
-              <div class="genre-item" data-genre="trap">
-                <span>Trap</span>
-              </div>
-              <div class="genre-item" data-genre="alternative">
-                <span>Alternative</span>
-              </div>
-              <div class="genre-item" data-genre="grunge">
-                <span>Grunge</span>
-              </div>
-              <div class="genre-item" data-genre="ska">
-                <span>Ska</span>
-              </div>
-              <div class="genre-item" data-genre="synthwave">
-                <span>Synthwave</span>
-              </div>
-              <div class="genre-item" data-genre="lo-fi">
-                <span>Lo-Fi</span>
-              </div>
-              <div class="genre-item" data-genre="bossa-nova">
-                <span>Bossa Nova</span>
-              </div>
-              <div class="genre-item" data-genre="latin">
-                <span>Latin</span>
-              </div>
-              <div class="genre-item" data-genre="afrobeat">
-                <span>Afrobeat</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Decades Selection -->
-        <div class="customization-section">
-          <div class="section-toggle" onclick="toggleSection('decades')">
-            <span class="section-title">📅 Choose decades (optional)</span>
-            <span class="toggle-icon" id="decades-toggle">▼</span>
-          </div>
-          <div class="section-content" id="decades-content">
-            <div class="decade-grid">
-              <div class="checkbox-item">
-                <input type="checkbox" name="decades" value="2020s" id="2020s">
-                <label for="2020s">2020s</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="decades" value="2010s" id="2010s">
-                <label for="2010s">2010s</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="decades" value="2000s" id="2000s">
-                <label for="2000s">2000s</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="decades" value="1990s" id="1990s">
-                <label for="1990s">90s</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="decades" value="1980s" id="1980s">
-                <label for="1980s">80s</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="decades" value="1970s" id="1970s">
-                <label for="1970s">70s</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="decades" value="1960s" id="1960s">
-                <label for="1960s">60s</label>
-              </div>
-              <div class="checkbox-item">
-                <input type="checkbox" name="decades" value="classic" id="classic">
-                <label for="classic">Pre-60s</label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Artist Selection -->
-        <div class="customization-section">
-          <div class="section-toggle" onclick="toggleSection('artists')">
-            <span class="section-title">👨‍🎤 Include specific artists (optional)</span>
-            <span class="toggle-icon" id="artists-toggle">▼</span>
-          </div>
-          <div class="section-content" id="artists-content">
-            <div class="form-group">
-              <input type="text" name="artists" placeholder="Type artist names separated by commas...">
-              <div class="help-text">
-                Example: Taylor Swift, The Beatles, Drake
-              </div>
-            </div>
-
-            <div class="artist-grid" id="artist-grid">
-              <!-- Artist images and names will be displayed here -->
-            </div>
-
-            <!-- Artist Selection Options -->
-            <div class="selection-options">
-              <h4>Selection Options:</h4>
-              <div class="toggle-button-group">
-                <label class="toggle-button">
-                  <input type="radio" name="artistSelection" value="selected" checked>
-                  <span>Songs of the selected artists only</span>
-                </label>
-                <label class="toggle-button">
-                  <input type="radio" name="artistSelection" value="similar">
-                  <span>Songs of similar artists only</span>
-                </label>
-                <label class="toggle-button">
-                  <input type="radio" name="artistSelection" value="both">
-                  <span>Songs of the selected artists + similar artists</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tracks Section -->
-        <div class="customization-section">
-          <div class="section-toggle" onclick="toggleSection('tracks')">
-            <span class="section-title">🎵 Include specific tracks (optional)</span>
-            <span class="toggle-icon" id="tracks-toggle">▼</span>
-          </div>
-          <div class="section-content" id="tracks-content">
-            <div class="form-group">
-              <input type="text" name="tracks" placeholder="Type track names separated by commas...">
-              <div class="help-text">
-                Example: Blinding Lights, Shape of You, Rolling in the Deep
-              </div>
-            </div>
-
-            <div class="track-grid" id="track-grid">
-              <!-- Track images and names will be displayed here -->
-            </div>
-
-            <!-- Track Selection Options -->
-            <div class="selection-options">
-              <h4>Selection Options:</h4>
-              <div class="toggle-button-group">
-                <label class="toggle-button">
-                  <input type="radio" name="trackSelection" value="selected" checked>
-                  <span>Songs of the selected tracks only</span>
-                </label>
-                <label class="toggle-button">
-                  <input type="radio" name="trackSelection" value="similar">
-                  <span>Songs similar to the selected tracks only</span>
-                </label>
-                <label class="toggle-button">
-                  <input type="radio" name="trackSelection" value="both">
-                  <span>Songs of the selected tracks + similar tracks</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Albums Section -->
-        <div class="customization-section">
-          <div class="section-toggle" onclick="toggleSection('albums')">
-            <span class="section-title">📀 Include specific albums (optional)</span>
-            <span class="toggle-icon" id="albums-toggle">▼</span>
-          </div>
-          <div class="section-content" id="albums-content">
-            <div class="form-group">
-              <input type="text" name="albums" placeholder="Type album names separated by commas...">
-              <div class="help-text">
-                Example: After Hours, Thriller, Abbey Road
-              </div>
-            </div>
-
-            <div class="album-grid" id="album-grid">
-              <!-- Album images and names will be displayed here -->
-            </div>
-
-            <!-- Album Selection Options -->
-            <div class="selection-options">
-              <h4>Selection Options:</h4>
-              <div class="toggle-button-group">
-                <label class="toggle-button">
-                  <input type="radio" name="albumSelection" value="selected" checked>
-                  <span>Songs of the selected albums only</span>
-                </label>
-                <label class="toggle-button">
-                  <input type="radio" name="albumSelection" value="similar">
-                  <span>Songs similar to the selected albums only</span>
-                </label>
-                <label class="toggle-button">
-                  <input type="radio" name="albumSelection" value="both">
-                  <span>Songs of the selected albums + similar albums</span>
-                </label>
+                Be as specific as you want! Mention genres, moods, activities, or anything else that describes your ideal playlist.
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- New Free Input Mode -->
-    <div class="generation-mode">
-      <div class="mode-header" onclick="selectMode('freeform')">
-        <input type="radio" name="mode" value="freeform" id="freeform" class="mode-radio">
-        <div>
-          <div class="mode-title">✍️ Free Input</div>
-          <div class="mode-description">Describe exactly what you want in your own words</div>
-        </div>
-      </div>
+      <!-- Listening History Options -->
+      <div class="listening-history-section">
+        <h3>🎧 Listening History Settings</h3>
 
-      <!-- Free Input Options (Hidden by default) -->
-      <div id="freeform-options" style="display: none;">
-        <div class="customization-section">
-          <div class="form-group">
-            <label for="freeform-query" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">
-              🎵 Describe your perfect playlist:
-            </label>
-            <textarea name="freeformQuery" id="freeform-query" rows="4"
-                      placeholder="Describe what kind of playlist you want... For example: 'I want upbeat indie rock songs perfect for a road trip with friends' or 'Create a chill jazz playlist for late night studying'"
-                      style="resize: vertical; min-height: 100px;"></textarea>
-            <div class="help-text">
-              Be as specific as you want! Mention genres, moods, activities, or anything else that describes your ideal playlist.
-            </div>
+        <div class="form-group">
+          <label style="display: flex; align-items: center; font-weight: 500;">
+            <input type="checkbox" name="useListeningHistory" id="use-listening-history" value="true" checked
+                   style="margin-right: 8px;">
+            Include my Spotify listening history
+          </label>
+          <!-- Add this hidden field -->
+          <input type="hidden" name="_useListeningHistory" value="on">
+          <div class="help-text" style="margin-left: 20px;">
+            This helps personalize recommendations based on your music taste
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Listening History Options -->
-    <div class="listening-history-section">
-      <h3>🎧 Listening History Settings</h3>
-
-      <div class="form-group">
-        <label style="display: flex; align-items: center; font-weight: 500;">
-          <input type="checkbox" name="useListeningHistory" id="use-listening-history" value="true" checked
-                 style="margin-right: 8px;">
-          Include my Spotify listening history
-        </label>
-        <!-- Add this hidden field -->
-        <input type="hidden" name="_useListeningHistory" value="on">
-        <div class="help-text" style="margin-left: 20px;">
-          This helps personalize recommendations based on your music taste
+        <div id="history-timeframe" class="form-group">
+          <label for="timeframe" class="form-label">📊 Listening history timeframe:</label>
+          <select name="timeframe" id="timeframe" class="form-select">
+            <option value="short_term">Last 4 weeks</option>
+            <option value="medium_term" selected>Last 6 months</option>
+            <option value="long_term">Several years</option>
+          </select>
         </div>
       </div>
 
-      <div id="history-timeframe" class="form-group">
-        <label for="timeframe" class="form-label">📊 Listening history timeframe:</label>
-        <select name="timeframe" id="timeframe" class="form-select">
-          <option value="short_term">Last 4 weeks</option>
-          <option value="medium_term" selected>Last 6 months</option>
-          <option value="long_term">Several years</option>
-        </select>
-      </div>
-    </div>
+      <!-- Generate Section -->
+      <div class="generate-section">
+        <button type="submit" class="generate-btn">🎶 Generate My Playlist</button>
 
-    <!-- Generate Section -->
-    <div class="generate-section">
-      <button type="submit" class="generate-btn">🎶 Generate My Playlist</button>
+        <!-- Spinner -->
+        <div id="loading-overlay" class="loading-overlay" style="display: none;">
+          <div class="spinner"></div>
+        </div>
 
-      <!-- Spinner -->
-      <div id="loading-overlay" class="loading-overlay" style="display: none;">
-        <div class="spinner"></div>
+        <div class="quick-options">
+          <div class="quick-option" onclick="quickGenerate('workout')">🏃‍♂️ Quick Workout Mix</div>
+          <div class="quick-option" onclick="quickGenerate('chill')">☕ Coffee Shop Vibes</div>
+          <div class="quick-option" onclick="quickGenerate('party')">🎉 Party Hits</div>
+          <div class="quick-option" onclick="quickGenerate('discover')">🔍 Discover New Music</div>
+        </div>
       </div>
-
-      <div class="quick-options">
-        <div class="quick-option" onclick="quickGenerate('workout')">🏃‍♂️ Quick Workout Mix</div>
-        <div class="quick-option" onclick="quickGenerate('chill')">☕ Coffee Shop Vibes</div>
-        <div class="quick-option" onclick="quickGenerate('party')">🎉 Party Hits</div>
-        <div class="quick-option" onclick="quickGenerate('discover')">🔍 Discover New Music</div>
-      </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>
 
 <script th:src="@{/js/spinners-utils.js}" type="text/javascript"></script>

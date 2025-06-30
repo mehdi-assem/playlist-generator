@@ -8,32 +8,34 @@
 <body>
 <div th:replace="~{layout :: .navigation}"></div>
 
-<div th:fragment="content" class="content">
-  <h1>My Top Tracks</h1>
-  <form class="filter-form" th:action="@{/api/tracks}" method="get">
-    <label for="timeRange">Select Time Range:</label>
-    <select name="timeRange" id="timeRange" onchange="this.form.submit()">
-      <option th:each="tr : ${timeRanges}"
-              th:value="${tr.value}"
-              th:text="${tr.description}"
-              th:selected="${tr.value == selectedTimeRange}">
-      </option>
-    </select>
-  </form>
+<div class="main-wrapper">
+  <div th:fragment="content" class="content">
+    <h1>My Top Tracks</h1>
+    <form class="filter-form" th:action="@{/api/tracks}" method="get">
+      <label for="timeRange">Select Time Range:</label>
+      <select name="timeRange" id="timeRange" onchange="this.form.submit()">
+        <option th:each="tr : ${timeRanges}"
+                th:value="${tr.value}"
+                th:text="${tr.description}"
+                th:selected="${tr.value == selectedTimeRange}">
+        </option>
+      </select>
+    </form>
 
-  <div id="top-tracks-container" class="grid-container" th:if="${not #lists.isEmpty(tracks)}">
-    <div th:each="track : ${tracks}" class="grid-item">
-      <h2 th:text="${track.name}">Track Name</h2>
-      <img th:src="${track.album.images[0].url}" alt="Album Image"/>
-      <p th:text="${track.artists[0].name}">Artist Name</p>
+    <div id="top-tracks-container" class="grid-container" th:if="${not #lists.isEmpty(tracks)}">
+      <div th:each="track : ${tracks}" class="grid-item">
+        <h2 th:text="${track.name}">Track Name</h2>
+        <img th:src="${track.album.images[0].url}" alt="Album Image"/>
+        <p th:text="${track.artists[0].name}">Artist Name</p>
+      </div>
     </div>
-  </div>
-  <div th:if="${#lists.isEmpty(tracks)}">
-    <h2>No tracks found.</h2>
-  </div>
+    <div th:if="${#lists.isEmpty(tracks)}">
+      <h2>No tracks found.</h2>
+    </div>
 
-  <!-- Reusable Pagination Fragment -->
-  <div th:replace="~{layout :: pagination('/api/artists', 'timeRange')}"></div>
+    <!-- Reusable Pagination Fragment -->
+    <div th:replace="~{layout :: pagination('/api/tracks', 'timeRange')}"></div>
+  </div>
 </div>
 </body>
 </html>

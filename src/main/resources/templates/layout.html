@@ -17,8 +17,11 @@
   <a th:href="@{/api/playlists}" th:classappend="${#strings.equals(navPage, 'playlists') ? 'active' : ''}">My Playlists</a>
 </nav>
 
-<div class="content">
-  <th:block th:replace="${content}"></th:block>
+<!-- Add the main-wrapper div here -->
+<div class="main-wrapper">
+  <div class="content">
+    <th:block th:replace="${content}"></th:block>
+  </div>
 </div>
 
 <!-- Reusable Pagination Fragment -->
