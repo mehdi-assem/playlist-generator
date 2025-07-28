@@ -1,6 +1,10 @@
-# Spotify Playlist Generator
+## Spotify Playlist Generator
 
 An intelligent playlist generator that creates personalized Spotify playlists using AI and your listening history. Built with Spring Boot, powered by Google Gemini AI and LastFM API, this application analyzes your music preferences and generates curated playlists based on your taste, mood, and custom parameters.
+
+## Overview
+
+[<img src="https://img.youtube.com/vi/wMkMGC9CIGs/0.jpg" width="550" />](https://www.youtube.com/watch?v=wMkMGC9CIGs)
 
 ## Features
 
